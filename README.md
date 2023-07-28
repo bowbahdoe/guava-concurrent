@@ -1,10 +1,10 @@
-# guava-collect
+# guava-concurrent
 
 ## What
 
 This package is a fork of [Guava](https://github.com/google/guava) around roughly release `32.1.1` which
 * Is shaded under `dev.mccue.guava`
-* Only contains the contents of the `com.google.common.collect` package
+* Only contains the contents of the `com.google.common.util.concurrent` package
 * Has a proper `module-info.java`
 * Has all usages of `sun.misc.*` removed
 
@@ -35,7 +35,7 @@ in-depth usage guides.
 ```xml
 <dependency>
     <groupId>dev.mccue</groupId>
-    <artifactId>guava-collect</artifactId>
+    <artifactId>guava-concurrent</artifactId>
     <version>0.0.1</version>
 </dependency>
 ```
