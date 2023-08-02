@@ -6,7 +6,7 @@
 
     <groupId>dev.mccue</groupId>
     <artifactId>guava-concurrent</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <!-- <version>32.1.1</version> -->
     <packaging>jar</packaging>
 
@@ -47,25 +47,25 @@
         <dependency>
             <groupId>dev.mccue</groupId>
             <artifactId>guava-base</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>dev.mccue</groupId>
             <artifactId>guava-collect</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>dev.mccue</groupId>
             <artifactId>guava-primitives</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>dev.mccue</groupId>
             <artifactId>guava-math</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
 
         <dependency>
@@ -121,6 +121,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>3.4.1</version>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-javadoc</id>
@@ -129,9 +132,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <doclint>none</doclint>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
