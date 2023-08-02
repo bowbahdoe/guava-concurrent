@@ -19,10 +19,10 @@ import java.util.concurrent.Future;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A callback for accepting the results of a {@link Future} computation
+ * A callback for accepting the results of a {@code java.util.concurrent.Future} computation
  * asynchronously.
  *
- * <p>To attach to a {@link ListenableFuture} use {@link Futures#addCallback}.
+ * <p>To attach to a {@code ListenableFuture} use {@code Futures#addCallback}.
  *
  * @author Anthony Zana
  * @since 10.0
@@ -35,7 +35,7 @@ public interface FutureCallback<V extends @Nullable Object> {
   /**
    * Invoked when a {@code Future} computation fails or is canceled.
    *
-   * <p>If the future's {@link Future#get() get} method throws an {@link ExecutionException}, then
+   * <p>If the future's {@code Future#get() get} method throws an {@code ExecutionException}, then
    * the cause is passed to this method. Any other thrown object is passed unaltered.
    */
   void onFailure(Throwable t);

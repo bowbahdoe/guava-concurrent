@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * A {@link BlockingQueue} which forwards all its method calls to another {@link BlockingQueue}.
+ * A {@code BlockingQueue} which forwards all its method calls to another {@code BlockingQueue}.
  * Subclasses should override one or more methods to modify the behavior of the backing collection
  * as desired per the <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator
  * pattern</a>.

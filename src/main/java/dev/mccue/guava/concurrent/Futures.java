@@ -48,14 +48,14 @@ import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Static utility methods pertaining to the {@link Future} interface.
+ * Static utility methods pertaining to the {@code Future} interface.
  *
- * <p>Many of these methods use the {@link ListenableFuture} API; consult the Guava User Guide
+ * <p>Many of these methods use the {@code ListenableFuture} API; consult the Guava User Guide
  * article on <a href="https://github.com/google/guava/wiki/ListenableFutureExplained">{@code
  * ListenableFuture}</a>.
  *
  * <p>The main purpose of {@code ListenableFuture} is to help you chain together a graph of
- * asynchronous operations. You can chain them together manually with calls to methods like {@link
+ * asynchronous operations. You can chain them together manually with calls to methods like {@code
  * Futures#transform(ListenableFuture, Function, Executor) Futures.transform}, but you will often
  * find it easier to use a framework. Frameworks automate the process, often adding features like
  * monitoring, debugging, and cancellation. Examples of frameworks include:
@@ -64,13 +64,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *   <li><a href="https://dagger.dev/producers.html">Dagger Producers</a>
  * </ul>
  *
- * <p>If you do chain your operations manually, you may want to use {@link FluentFuture}.
+ * <p>If you do chain your operations manually, you may want to use {@code FluentFuture}.
  *
  * @author Kevin Bourrillion
  * @author Nishant Thakkar
  * @author Sven Mawson
  * @since 1.0
  */
+
 @ElementTypesAreNonnullByDefault
 public final class Futures extends GwtFuturesCatchingSpecialization {
 
@@ -255,7 +256,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   /**
    * Returns a {@code Future} whose result is taken from the given primary {@code input} or, if the
    * primary input fails with the given {@code exceptionType}, from the result provided by the
-   * {@code fallback}. {@link Function#apply} is not invoked until the primary input has failed, so
+   * {@code fallback}. {@code Function#apply} is not invoked until the primary input has failed, so
    * if the primary input succeeds, it is never invoked. If, during the invocation of {@code
    * fallback}, an exception is thrown, this exception is used as the result of the output {@code
    * Future}.
@@ -272,18 +273,18 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the warnings the {@link MoreExecutors#directExecutor} documentation.
+   * the warnings the {@code MoreExecutors#directExecutor} documentation.
    *
    * @param input the primary input {@code Future}
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against the input's exception. "The input's exception" means the cause of
-   *     the {@link ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
+   *     the {@code ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
    *     different kind of exception, that exception itself. To avoid hiding bugs and other
    *     unrecoverable errors, callers should prefer more specific types, avoiding {@code
    *     Throwable.class} in particular.
-   * @param fallback the {@link Function} to be called if {@code input} fails with the expected
+   * @param fallback the {@code Function} to be called if {@code input} fails with the expected
    *     exception type. The function's argument is the input's exception. "The input's exception"
-   *     means the cause of the {@link ExecutionException} thrown by {@code input.get()} or, if
+   *     means the cause of the {@code ExecutionException} thrown by {@code input.get()} or, if
    *     {@code get()} throws a different kind of exception, that exception itself.
    * @param executor the executor that runs {@code fallback} if {@code input} fails
    * @since 19.0
@@ -300,7 +301,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   /**
    * Returns a {@code Future} whose result is taken from the given primary {@code input} or, if the
    * primary input fails with the given {@code exceptionType}, from the result provided by the
-   * {@code fallback}. {@link AsyncFunction#apply} is not invoked until the primary input has
+   * {@code fallback}. {@code AsyncFunction#apply} is not invoked until the primary input has
    * failed, so if the primary input succeeds, it is never invoked. If, during the invocation of
    * {@code fallback}, an exception is thrown, this exception is used as the result of the output
    * {@code Future}.
@@ -336,18 +337,18 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the warnings the {@link MoreExecutors#directExecutor} documentation.
+   * the warnings the {@code MoreExecutors#directExecutor} documentation.
    *
    * @param input the primary input {@code Future}
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against the input's exception. "The input's exception" means the cause of
-   *     the {@link ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
+   *     the {@code ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
    *     different kind of exception, that exception itself. To avoid hiding bugs and other
    *     unrecoverable errors, callers should prefer more specific types, avoiding {@code
    *     Throwable.class} in particular.
-   * @param fallback the {@link AsyncFunction} to be called if {@code input} fails with the expected
+   * @param fallback the {@code AsyncFunction} to be called if {@code input} fails with the expected
    *     exception type. The function's argument is the input's exception. "The input's exception"
-   *     means the cause of the {@link ExecutionException} thrown by {@code input.get()} or, if
+   *     means the cause of the {@code ExecutionException} thrown by {@code input.get()} or, if
    *     {@code get()} throws a different kind of exception, that exception itself.
    * @param executor the executor that runs {@code fallback} if {@code input} fails
    * @since 19.0 (similar functionality in 14.0 as {@code withFallback})
@@ -362,8 +363,8 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns a future that delegates to another but will finish early (via a {@link
-   * TimeoutException} wrapped in an {@link ExecutionException}) if the specified duration expires.
+   * Returns a future that delegates to another but will finish early (via a {@code
+   * TimeoutException} wrapped in an {@code ExecutionException}) if the specified duration expires.
    *
    * <p>The delegate future is interrupted and cancelled if it times out.
    *
@@ -379,8 +380,8 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns a future that delegates to another but will finish early (via a {@link
-   * TimeoutException} wrapped in an {@link ExecutionException}) if the specified duration expires.
+   * Returns a future that delegates to another but will finish early (via a {@code
+   * TimeoutException} wrapped in an {@code ExecutionException}) if the specified duration expires.
    *
    * <p>The delegate future is interrupted and cancelled if it times out.
    *
@@ -419,7 +420,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the warnings the {@link MoreExecutors#directExecutor} documentation.
+   * the warnings the {@code MoreExecutors#directExecutor} documentation.
    *
    * <p>The returned {@code Future} attempts to keep its cancellation state in sync with that of the
    * input future and that of the future returned by the chain function. That is, if the returned
@@ -455,7 +456,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the warnings the {@link MoreExecutors#directExecutor} documentation.
+   * the warnings the {@code MoreExecutors#directExecutor} documentation.
    *
    * <p>The returned {@code Future} attempts to keep its cancellation state in sync with that of the
    * input future. That is, if the returned {@code Future} is cancelled, it will attempt to cancel
@@ -479,13 +480,13 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Like {@link #transform(ListenableFuture, Function, Executor)} except that the transformation
-   * {@code function} is invoked on each call to {@link Future#get() get()} on the returned future.
+   * Like {@code #transform(ListenableFuture, Function, Executor)} except that the transformation
+   * {@code function} is invoked on each call to {@code Future#get() get()} on the returned future.
    *
    * <p>The returned {@code Future} reflects the input's cancellation state directly, and any
    * attempt to cancel the returned Future is likewise passed through to the input Future.
    *
-   * <p>Note that calls to {@linkplain Future#get(long, TimeUnit) timed get} only apply the timeout
+   * <p>Note that calls to {@code Future#get(long, TimeUnit) timed get} only apply the timeout
    * to the execution of the underlying {@code Future}, <em>not</em> to the execution of the
    * transformation function.
    *
@@ -547,7 +548,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * <p>The list of results is in the same order as the input list.
    *
-   * <p>This differs from {@link #successfulAsList(ListenableFuture[])} in that it will return a
+   * <p>This differs from {@code #successfulAsList(ListenableFuture[])} in that it will return a
    * failed future if any of the items fails.
    *
    * <p>Canceling this future will attempt to cancel all the component futures, and if any of the
@@ -574,7 +575,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * <p>The list of results is in the same order as the input list.
    *
-   * <p>This differs from {@link #successfulAsList(Iterable)} in that it will return a failed future
+   * <p>This differs from {@code #successfulAsList(Iterable)} in that it will return a failed future
    * if any of the items fails.
    *
    * <p>Canceling this future will attempt to cancel all the component futures, and if any of the
@@ -595,7 +596,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Creates a {@link FutureCombiner} that processes the completed futures whether or not they're
+   * Creates a {@code FutureCombiner} that processes the completed futures whether or not they're
    * successful.
    *
    * <p>Any failures from the input futures will not be propagated to the returned future.
@@ -609,7 +610,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Creates a {@link FutureCombiner} that processes the completed futures whether or not they're
+   * Creates a {@code FutureCombiner} that processes the completed futures whether or not they're
    * successful.
    *
    * <p>Any failures from the input futures will not be propagated to the returned future.
@@ -622,7 +623,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Creates a {@link FutureCombiner} requiring that all passed in futures are successful.
+   * Creates a {@code FutureCombiner} requiring that all passed in futures are successful.
    *
    * <p>If any input fails, the returned future fails immediately.
    *
@@ -635,7 +636,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Creates a {@link FutureCombiner} requiring that all passed in futures are successful.
+   * Creates a {@code FutureCombiner} requiring that all passed in futures are successful.
    *
    * <p>If any input fails, the returned future fails immediately.
    *
@@ -650,7 +651,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * A helper to create a new {@code ListenableFuture} whose result is generated from a combination
    * of input futures.
    *
-   * <p>See {@link #whenAllComplete} and {@link #whenAllSucceed} for how to instantiate this class.
+   * <p>See {@code #whenAllComplete} and {@code #whenAllSucceed} for how to instantiate this class.
    *
    * <p>Example:
    *
@@ -683,7 +684,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
     }
 
     /**
-     * Creates the {@link ListenableFuture} which will return the result of calling {@link
+     * Creates the {@code ListenableFuture} which will return the result of calling {@code
      * AsyncCallable#call} in {@code combiner} when all futures complete, using the specified {@code
      * executor}.
      *
@@ -708,7 +709,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
     }
 
     /**
-     * Creates the {@link ListenableFuture} which will return the result of calling {@link
+     * Creates the {@code ListenableFuture} which will return the result of calling {@code
      * Callable#call} in {@code combiner} when all futures complete, using the specified {@code
      * executor}.
      *
@@ -733,7 +734,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
     }
 
     /**
-     * Creates the {@link ListenableFuture} which will return the result of running {@code combiner}
+     * Creates the {@code ListenableFuture} which will return the result of running {@code combiner}
      * when all Futures complete. {@code combiner} will run using {@code executor}.
      *
      * <p>If the combiner throws a {@code CancellationException}, the returned future will be
@@ -823,7 +824,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * <p>The list of results is in the same order as the input list.
    *
-   * <p>This differs from {@link #allAsList(ListenableFuture[])} in that it's tolerant of failed
+   * <p>This differs from {@code #allAsList(ListenableFuture[])} in that it's tolerant of failed
    * futures for any of the items, representing them as {@code null} in the result list.
    *
    * <p>Canceling this future will attempt to cancel all the component futures.
@@ -859,7 +860,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * <p>The list of results is in the same order as the input list.
    *
-   * <p>This differs from {@link #allAsList(Iterable)} in that it's tolerant of failed futures for
+   * <p>This differs from {@code #allAsList(Iterable)} in that it's tolerant of failed futures for
    * any of the items, representing them as {@code null} in the result list.
    *
    * <p>Canceling this future will attempt to cancel all the component futures.
@@ -1041,7 +1042,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
 
   /**
    * Registers separate success and failure callbacks to be run when the {@code Future}'s
-   * computation is {@linkplain Future#isDone() complete} or, if the
+   * computation is {@code java.util.concurrent.Future#isDone() complete} or, if the
    * computation is already complete, immediately.
    *
    * <p>The callback is run on {@code executor}. There is no guaranteed ordering of execution of
@@ -1050,7 +1051,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * <p>Exceptions thrown by a {@code callback} will be propagated up to the executor. Any exception
    * thrown during {@code Executor.execute} (e.g., a {@code RejectedExecutionException} or an
-   * exception thrown by {@linkplain MoreExecutors#directExecutor direct execution}) will be caught
+   * exception thrown by {@code MoreExecutors#directExecutor direct execution}) will be caught
    * and logged.
    *
    * <p>Example:
@@ -1070,9 +1071,9 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the warnings the {@link MoreExecutors#directExecutor} documentation.
+   * the warnings the {@code MoreExecutors#directExecutor} documentation.
    *
-   * <p>For a more general interface to attach a completion listener to a {@code Future}, see {@link
+   * <p>For a more general interface to attach a completion listener to a {@code Future}, see {@code
    * ListenableFuture#addListener addListener}.
    *
    * @param future The future attach the callback to.
@@ -1088,7 +1089,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
     future.addListener(new CallbackListener<V>(future, callback), executor);
   }
 
-  /** See {@link #addCallback(ListenableFuture, FutureCallback, Executor)} for behavioral notes. */
+  /** See {@code #addCallback(ListenableFuture, FutureCallback, Executor)} for behavioral notes. */
   private static final class CallbackListener<V extends @Nullable Object> implements Runnable {
     final Future<V> future;
     final FutureCallback<? super V> callback;
@@ -1133,13 +1134,13 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>The benefits of this method are twofold. First, the name "getDone" suggests to readers that
    * the {@code Future} is already done. Second, if buggy code calls {@code getDone} on a {@code
    * Future} that is still pending, the program will throw instead of block. This can be important
-   * for APIs like {@link #whenAllComplete whenAllComplete(...)}{@code .}{@link
+   * for APIs like {@code #whenAllComplete whenAllComplete(...)}{@code .}{@code
    * FutureCombiner#call(Callable, Executor) call(...)}, where it is easy to use a new input from
    * the {@code call} implementation but forget to add it to the arguments of {@code
    * whenAllComplete}.
    *
    * <p>If you are looking for a method to determine whether a given {@code Future} is done, use the
-   * instance method {@link Future#isDone()}.
+   * instance method {@code Future#isDone()}.
    *
    * @throws ExecutionException if the {@code Future} failed with an exception
    * @throws CancellationException if the {@code Future} was cancelled
@@ -1165,7 +1166,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns the result of {@link Future#get()}, converting most exceptions to a new instance of the
+   * Returns the result of {@code Future#get()}, converting most exceptions to a new instance of the
    * given checked exception type. This reduces boilerplate for a common use of {@code Future} in
    * which it is unnecessary to programmatically distinguish between exception types or to extract
    * other information from the exception instance.
@@ -1173,12 +1174,12 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Exceptions from {@code Future.get} are treated as follows:
    *
    * <ul>
-   *   <li>Any {@link ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
-   *       is a checked exception, an {@link UncheckedExecutionException} if the cause is a {@code
-   *       RuntimeException}, or an {@link ExecutionError} if the cause is an {@code Error}.
-   *   <li>Any {@link InterruptedException} is wrapped in an {@code X} (after restoring the
+   *   <li>Any {@code ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
+   *       is a checked exception, an {@code UncheckedExecutionException} if the cause is a {@code
+   *       RuntimeException}, or an {@code ExecutionError} if the cause is an {@code Error}.
+   *   <li>Any {@code InterruptedException} is wrapped in an {@code X} (after restoring the
    *       interrupt).
-   *   <li>Any {@link CancellationException} is propagated untouched, as is any other {@link
+   *   <li>Any {@code CancellationException} is propagated untouched, as is any other {@code
    *       RuntimeException} (though {@code get} implementations are discouraged from throwing such
    *       exceptions).
    * </ul>
@@ -1191,7 +1192,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Instances of {@code exceptionClass} are created by choosing an arbitrary public constructor
    * that accepts zero or more arguments, all of type {@code String} or {@code Throwable}
    * (preferring constructors with at least one {@code String}) and calling the constructor via
-   * reflection. If the exception did not already have a cause, one is set by calling {@link
+   * reflection. If the exception did not already have a cause, one is set by calling {@code
    * Throwable#initCause(Throwable)} on it. If no such constructor exists, an {@code
    * IllegalArgumentException} is thrown.
    *
@@ -1215,7 +1216,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns the result of {@link Future#get(long, TimeUnit)}, converting most exceptions to a new
+   * Returns the result of {@code Future#get(long, TimeUnit)}, converting most exceptions to a new
    * instance of the given checked exception type. This reduces boilerplate for a common use of
    * {@code Future} in which it is unnecessary to programmatically distinguish between exception
    * types or to extract other information from the exception instance.
@@ -1223,13 +1224,13 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Exceptions from {@code Future.get} are treated as follows:
    *
    * <ul>
-   *   <li>Any {@link ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
-   *       is a checked exception, an {@link UncheckedExecutionException} if the cause is a {@code
-   *       RuntimeException}, or an {@link ExecutionError} if the cause is an {@code Error}.
-   *   <li>Any {@link InterruptedException} is wrapped in an {@code X} (after restoring the
+   *   <li>Any {@code ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
+   *       is a checked exception, an {@code UncheckedExecutionException} if the cause is a {@code
+   *       RuntimeException}, or an {@code ExecutionError} if the cause is an {@code Error}.
+   *   <li>Any {@code InterruptedException} is wrapped in an {@code X} (after restoring the
    *       interrupt).
-   *   <li>Any {@link TimeoutException} is wrapped in an {@code X}.
-   *   <li>Any {@link CancellationException} is propagated untouched, as is any other {@link
+   *   <li>Any {@code TimeoutException} is wrapped in an {@code X}.
+   *   <li>Any {@code CancellationException} is propagated untouched, as is any other {@code
    *       RuntimeException} (though {@code get} implementations are discouraged from throwing such
    *       exceptions).
    * </ul>
@@ -1242,7 +1243,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Instances of {@code exceptionClass} are created by choosing an arbitrary public constructor
    * that accepts zero or more arguments, all of type {@code String} or {@code Throwable}
    * (preferring constructors with at least one {@code String}) and calling the constructor via
-   * reflection. If the exception did not already have a cause, one is set by calling {@link
+   * reflection. If the exception did not already have a cause, one is set by calling {@code
    * Throwable#initCause(Throwable)} on it. If no such constructor exists, an {@code
    * IllegalArgumentException} is thrown.
    *
@@ -1266,7 +1267,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns the result of {@link Future#get(long, TimeUnit)}, converting most exceptions to a new
+   * Returns the result of {@code Future#get(long, TimeUnit)}, converting most exceptions to a new
    * instance of the given checked exception type. This reduces boilerplate for a common use of
    * {@code Future} in which it is unnecessary to programmatically distinguish between exception
    * types or to extract other information from the exception instance.
@@ -1274,13 +1275,13 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Exceptions from {@code Future.get} are treated as follows:
    *
    * <ul>
-   *   <li>Any {@link ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
-   *       is a checked exception, an {@link UncheckedExecutionException} if the cause is a {@code
-   *       RuntimeException}, or an {@link ExecutionError} if the cause is an {@code Error}.
-   *   <li>Any {@link InterruptedException} is wrapped in an {@code X} (after restoring the
+   *   <li>Any {@code ExecutionException} has its <i>cause</i> wrapped in an {@code X} if the cause
+   *       is a checked exception, an {@code UncheckedExecutionException} if the cause is a {@code
+   *       RuntimeException}, or an {@code ExecutionError} if the cause is an {@code Error}.
+   *   <li>Any {@code InterruptedException} is wrapped in an {@code X} (after restoring the
    *       interrupt).
-   *   <li>Any {@link TimeoutException} is wrapped in an {@code X}.
-   *   <li>Any {@link CancellationException} is propagated untouched, as is any other {@link
+   *   <li>Any {@code TimeoutException} is wrapped in an {@code X}.
+   *   <li>Any {@code CancellationException} is propagated untouched, as is any other {@code
    *       RuntimeException} (though {@code get} implementations are discouraged from throwing such
    *       exceptions).
    * </ul>
@@ -1293,7 +1294,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Instances of {@code exceptionClass} are created by choosing an arbitrary public constructor
    * that accepts zero or more arguments, all of type {@code String} or {@code Throwable}
    * (preferring constructors with at least one {@code String}) and calling the constructor via
-   * reflection. If the exception did not already have a cause, one is set by calling {@link
+   * reflection. If the exception did not already have a cause, one is set by calling {@code
    * Throwable#initCause(Throwable)} on it. If no such constructor exists, an {@code
    * IllegalArgumentException} is thrown.
    *
@@ -1318,7 +1319,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   }
 
   /**
-   * Returns the result of calling {@link Future#get()} uninterruptibly on a task known not to throw
+   * Returns the result of calling {@code Future#get()} uninterruptibly on a task known not to throw
    * a checked exception. This makes {@code Future} more suitable for lightweight, fast-running
    * tasks that, barring bugs in the code, will not fail. This gives it exception-handling behavior
    * similar to that of {@code ForkJoinTask.join}.
@@ -1326,12 +1327,12 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * <p>Exceptions from {@code Future.get} are treated as follows:
    *
    * <ul>
-   *   <li>Any {@link ExecutionException} has its <i>cause</i> wrapped in an {@link
-   *       UncheckedExecutionException} (if the cause is an {@code Exception}) or {@link
+   *   <li>Any {@code ExecutionException} has its <i>cause</i> wrapped in an {@code
+   *       UncheckedExecutionException} (if the cause is an {@code Exception}) or {@code
    *       ExecutionError} (if the cause is an {@code Error}).
-   *   <li>Any {@link InterruptedException} causes a retry of the {@code get} call. The interrupt is
+   *   <li>Any {@code InterruptedException} causes a retry of the {@code get} call. The interrupt is
    *       restored before {@code getUnchecked} returns.
-   *   <li>Any {@link CancellationException} is propagated untouched. So is any other {@link
+   *   <li>Any {@code CancellationException} is propagated untouched. So is any other {@code
    *       RuntimeException} ({@code get} implementations are discouraged from throwing such
    *       exceptions).
    * </ul>
@@ -1341,7 +1342,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * from the underlying computation in an {@code UncheckedExecutionException} or {@code
    * ExecutionError}.
    *
-   * <p>For an uninterruptible {@code get} that preserves other exceptions, see {@link
+   * <p>For an uninterruptible {@code get} that preserves other exceptions, see {@code
    * Uninterruptibles#getUninterruptibly(Future)}.
    *
    * @throws UncheckedExecutionException if {@code get} throws an {@code ExecutionException} with an

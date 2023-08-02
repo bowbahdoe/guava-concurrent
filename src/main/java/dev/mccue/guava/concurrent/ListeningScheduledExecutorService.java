@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link ScheduledExecutorService} that returns {@link ListenableFuture} instances from its
- * {@code ExecutorService} methods. To create an instance from an existing {@link
- * ScheduledExecutorService}, call {@link
+ * A {@code ScheduledExecutorService} that returns {@code ListenableFuture} instances from its
+ * {@code ExecutorService} methods. To create an instance from an existing {@code
+ * ScheduledExecutorService}, call {@code
  * MoreExecutors#listeningDecorator(ScheduledExecutorService)}.
  *
  * @author Chris Povirk
@@ -40,7 +40,7 @@ public interface ListeningScheduledExecutorService
   ListenableScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit);
 
   /**
-   * Duration-based overload of {@link #schedule(Runnable, long, TimeUnit)}.
+   * Duration-based overload of {@code #schedule(Runnable, long, TimeUnit)}.
    *
    * @since 29.0
    */
@@ -54,7 +54,7 @@ public interface ListeningScheduledExecutorService
       Callable<V> callable, long delay, TimeUnit unit);
 
   /**
-   * Duration-based overload of {@link #schedule(Callable, long, TimeUnit)}.
+   * Duration-based overload of {@code #schedule(Callable, long, TimeUnit)}.
    *
    * @since 29.0
    */
@@ -69,7 +69,7 @@ public interface ListeningScheduledExecutorService
       Runnable command, long initialDelay, long period, TimeUnit unit);
 
   /**
-   * Duration-based overload of {@link #scheduleAtFixedRate(Runnable, long, long, TimeUnit)}.
+   * Duration-based overload of {@code #scheduleAtFixedRate(Runnable, long, long, TimeUnit)}.
    *
    * @since 29.0
    */
@@ -85,7 +85,7 @@ public interface ListeningScheduledExecutorService
       Runnable command, long initialDelay, long delay, TimeUnit unit);
 
   /**
-   * Duration-based overload of {@link #scheduleWithFixedDelay(Runnable, long, long, TimeUnit)}.
+   * Duration-based overload of {@code #scheduleWithFixedDelay(Runnable, long, long, TimeUnit)}.
    *
    * @since 29.0
    */

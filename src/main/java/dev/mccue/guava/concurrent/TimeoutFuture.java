@@ -29,8 +29,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Implementation of {@code Futures#withTimeout}.
  *
- * <p>Future that delegates to another but will finish early (via a {@link TimeoutException} wrapped
- * in an {@link ExecutionException}) if the specified duration expires. The delegate future is
+ * <p>Future that delegates to another but will finish early (via a {@code TimeoutException} wrapped
+ * in an {@code ExecutionException}) if the specified duration expires. The delegate future is
  * interrupted and cancelled if it times out.
  */
 @ElementTypesAreNonnullByDefault

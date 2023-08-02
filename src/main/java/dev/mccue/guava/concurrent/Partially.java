@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 /**
  * Outer class that exists solely to let us write {@code Partially.GwtIncompatible} instead of plain
- * {@code GwtIncompatible}. This is more accurate for {@link Futures#catching}, which is available
+ * {@code GwtIncompatible}. This is more accurate for {@code Futures#catching}, which is available
  * under GWT but with a slightly different signature.
  *
  * <p>We can't use {@code PartiallyGwtIncompatible} because then the GWT compiler wouldn't recognize

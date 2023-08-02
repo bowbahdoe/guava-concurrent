@@ -25,7 +25,7 @@ import java.lang.System.Logger;
 import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Implementation of {@link Futures#immediateFuture}. */
+/** Implementation of {@code Futures#immediateFuture}. */
 @ElementTypesAreNonnullByDefault
 // TODO(cpovirk): Make this final (but that may break Mockito spy calls).
 class ImmediateFuture<V extends @Nullable Object> implements ListenableFuture<V> {

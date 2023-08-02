@@ -18,7 +18,6 @@ import static dev.mccue.guava.concurrent.Platform.restoreInterruptIfIsInterrupte
 
 import dev.mccue.guava.base.Supplier;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
 import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Base class for services that do not need a thread while "running" but may need one during startup
- * and shutdown. Subclasses can implement {@link #startUp} and {@link #shutDown} methods, each which
+ * and shutdown. Subclasses can implement {@code #startUp} and {@code #shutDown} methods, each which
  * run in an executor which by default uses a separate thread for each method.
  *
  * @author Chris Nokleberg
@@ -95,9 +94,9 @@ public abstract class AbstractIdleService implements Service {
   protected abstract void shutDown() throws Exception;
 
   /**
-   * Returns the {@link Executor} that will be used to run this service. Subclasses may override
-   * this method to use a custom {@link Executor}, which may configure its worker thread with a
-   * specific name, thread group or priority. The returned executor's {@link
+   * Returns the {@code Executor} that will be used to run this service. Subclasses may override
+   * this method to use a custom {@code Executor}, which may configure its worker thread with a
+   * specific name, thread group or priority. The returned executor's {@code
    * Executor#execute(Runnable) execute()} method is called when this service is started and
    * stopped, and should return promptly.
    */
@@ -185,7 +184,7 @@ public abstract class AbstractIdleService implements Service {
   }
 
   /**
-   * Returns the name of this service. {@link AbstractIdleService} may include the name in debugging
+   * Returns the name of this service. {@code AbstractIdleService} may include the name in debugging
    * output.
    *
    * @since 14.0

@@ -202,7 +202,7 @@ abstract class AbstractTransformFuture<
   }
 
   /**
-   * An {@link AbstractTransformFuture} that delegates to an {@link AsyncFunction} and {@link
+   * An {@code AbstractTransformFuture} that delegates to an {@code AsyncFunction} and {@code
    * #setFuture(ListenableFuture)}.
    */
   private static final class AsyncTransformFuture<
@@ -234,7 +234,7 @@ abstract class AbstractTransformFuture<
   }
 
   /**
-   * An {@link AbstractTransformFuture} that delegates to a {@link Function} and {@link
+   * An {@code AbstractTransformFuture} that delegates to a {@code Function} and {@code
    * #set(Object)}.
    */
   private static final class TransformFuture<I extends @Nullable Object, O extends @Nullable Object>

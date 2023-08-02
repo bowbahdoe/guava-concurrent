@@ -20,6 +20,7 @@ import static java.lang.Thread.currentThread;
 import dev.mccue.jsr305.CheckForNull;
 
 /** Methods factored out so that they can be emulated differently in GWT. */
+
 @ElementTypesAreNonnullByDefault
 final class Platform {
   static boolean isInstanceOfThrowableClass(

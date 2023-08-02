@@ -37,7 +37,7 @@ import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A TimeLimiter that runs method calls in the background using an {@link ExecutorService}. If the
+ * A TimeLimiter that runs method calls in the background using an {@code ExecutorService}. If the
  * time limit expires for a given method call, the thread running the call will be interrupted.
  *
  * @author Kevin Bourrillion
@@ -61,7 +61,7 @@ public final class SimpleTimeLimiter implements TimeLimiter {
    * case the call may even time out before the target method is ever invoked.
    *
    * @param executor the ExecutorService that will execute the method calls on the target objects;
-   *     for example, a {@link Executors#newCachedThreadPool()}.
+   *     for example, a {@code Executors#newCachedThreadPool()}.
    * @since 22.0
    */
   public static SimpleTimeLimiter create(ExecutorService executor) {

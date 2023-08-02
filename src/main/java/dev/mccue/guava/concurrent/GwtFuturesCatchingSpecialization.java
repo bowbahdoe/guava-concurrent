@@ -14,12 +14,14 @@
 
 package dev.mccue.guava.concurrent;
 
+
 /**
- * Hidden superclass of {@link Futures} that provides us a place to declare special GWT versions of
- * the {@link Futures#catching(ListenableFuture, Class, dev.mccue.guava.base.Function,
+ * Hidden superclass of {@code Futures} that provides us a place to declare special GWT versions of
+ * the {@code Futures#catching(ListenableFuture, Class, dev.mccue.guava.base.Function,
  * java.util.concurrent.Executor) Futures.catching} family of methods. Those versions have slightly
  * different signatures.
  */
+
 // Super-sourced
 @ElementTypesAreNonnullByDefault
 abstract class GwtFuturesCatchingSpecialization {

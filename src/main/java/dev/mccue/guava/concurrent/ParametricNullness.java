@@ -55,7 +55,7 @@ import java.lang.annotation.Target;
  * <ul>
  *   <li>Kotlin, for which it makes the type-variable usage (a) a Kotlin platform type when the type
  *       argument is non-nullable and (b) nullable when the type argument is nullable. We use this
- *       to "undo" {@link ElementTypesAreNonnullByDefault}. It is the best we can do for Kotlin
+ *       to "undo" {@code ElementTypesAreNonnullByDefault}. It is the best we can do for Kotlin
  *       under our current constraints.
  *   <li>NullAway, which will <a
  *       href="https://github.com/google/guava/issues/6126#issuecomment-1204399671">treat it

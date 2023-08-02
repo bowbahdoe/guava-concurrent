@@ -19,7 +19,6 @@ import static dev.mccue.guava.concurrent.Internal.toNanosSaturated;
 
 import dev.mccue.guava.primitives.Longs;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
-
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -30,15 +29,15 @@ import dev.mccue.jsr305.CheckForNull;
 /**
  * A synchronization abstraction supporting waiting on arbitrary boolean conditions.
  *
- * <p>This class is intended as a replacement for {@link ReentrantLock}. Code using {@code Monitor}
+ * <p>This class is intended as a replacement for {@code ReentrantLock}. Code using {@code Monitor}
  * is less error-prone and more readable than code using {@code ReentrantLock}, without significant
  * performance loss. {@code Monitor} even has the potential for performance gain by optimizing the
  * evaluation and signaling of conditions. Signaling is entirely <a
  * href="http://en.wikipedia.org/wiki/Monitor_(synchronization)#Implicit_signaling">implicit</a>. By
  * eliminating explicit signaling, this class can guarantee that only one thread is awakened when a
- * condition becomes true (no "signaling storms" due to use of {@link
- * Condition#signalAll Condition.signalAll}) and that no signals are lost
- * (no "hangs" due to incorrect use of {@link Condition#signal
+ * condition becomes true (no "signaling storms" due to use of {@code
+ * java.util.concurrent.locks.Condition#signalAll Condition.signalAll}) and that no signals are lost
+ * (no "hangs" due to incorrect use of {@code java.util.concurrent.locks.Condition#signal
  * Condition.signal}).
  *
  * <p>A thread is said to <i>occupy</i> a monitor if it has <i>entered</i> the monitor but not yet
@@ -79,7 +78,7 @@ import dev.mccue.jsr305.CheckForNull;
  * <h2>Comparison with {@code synchronized} and {@code ReentrantLock}</h2>
  *
  * <p>The following examples show a simple threadsafe holder expressed using {@code synchronized},
- * {@link ReentrantLock}, and {@code Monitor}.
+ * {@code ReentrantLock}, and {@code Monitor}.
  *
  * <h3>{@code synchronized}</h3>
  *
@@ -296,7 +295,7 @@ public final class Monitor {
    * checked.
    *
    * <p>If a {@code Guard} is passed into any method of a {@code Monitor} other than the one it is
-   * associated with, an {@link IllegalMonitorStateException} is thrown.
+   * associated with, an {@code IllegalMonitorStateException} is thrown.
    *
    * @since 10.0
    */
@@ -360,9 +359,9 @@ public final class Monitor {
   }
 
   /**
-   * Creates a new {@linkplain Guard guard} for this monitor.
+   * Creates a new {@code Guard guard} for this monitor.
    *
-   * @param isSatisfied the new guard's boolean condition (see {@link Guard#isSatisfied
+   * @param isSatisfied the new guard's boolean condition (see {@code Guard#isSatisfied
    *     isSatisfied()})
    * @since 21.0
    */

@@ -21,7 +21,6 @@ import static java.lang.Math.max;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-
 import dev.mccue.guava.base.Stopwatch;
 import dev.mccue.guava.concurrent.SmoothRateLimiter.SmoothBursty;
 import dev.mccue.guava.concurrent.SmoothRateLimiter.SmoothWarmingUp;
@@ -33,14 +32,14 @@ import dev.mccue.jsr305.CheckForNull;
 
 /**
  * A rate limiter. Conceptually, a rate limiter distributes permits at a configurable rate. Each
- * {@link #acquire()} blocks if necessary until a permit is available, and then takes it. Once
+ * {@code #acquire()} blocks if necessary until a permit is available, and then takes it. Once
  * acquired, permits need not be released.
  *
  * <p>{@code RateLimiter} is safe for concurrent use: It will restrict the total rate of calls from
  * all threads. Note, however, that it does not guarantee fairness.
  *
  * <p>Rate limiters are often used to restrict the rate at which some physical or logical resource
- * is accessed. This is in contrast to {@link java.util.concurrent.Semaphore} which restricts the
+ * is accessed. This is in contrast to {@code java.util.concurrent.Semaphore} which restricts the
  * number of concurrent accesses instead of the rate (note though that concurrency and rate are
  * closely related, e.g. see <a href="http://en.wikipedia.org/wiki/Little%27s_law">Little's
  * Law</a>).
@@ -90,7 +89,6 @@ import dev.mccue.jsr305.CheckForNull;
  */
 // TODO(user): switch to nano precision. A natural unit of cost is "bytes", and a micro precision
 // would mean a maximum rate of "1MB/s", which might be small in some cases.
-@Beta
 @ElementTypesAreNonnullByDefault
 public abstract class RateLimiter {
   /**
@@ -127,7 +125,6 @@ public abstract class RateLimiter {
     return create(permitsPerSecond, SleepingStopwatch.createFromSystemTimer());
   }
 
-  @VisibleForTesting
   static RateLimiter create(double permitsPerSecond, SleepingStopwatch stopwatch) {
     RateLimiter rateLimiter = new SmoothBursty(stopwatch, 1.0 /* maxBurstSeconds */);
     rateLimiter.setRate(permitsPerSecond);
@@ -193,7 +190,6 @@ public abstract class RateLimiter {
         permitsPerSecond, warmupPeriod, unit, 3.0, SleepingStopwatch.createFromSystemTimer());
   }
 
-  @VisibleForTesting
   static RateLimiter create(
       double permitsPerSecond,
       long warmupPeriod,
@@ -263,7 +259,7 @@ public abstract class RateLimiter {
    * Returns the stable rate (as {@code permits per seconds}) with which this {@code RateLimiter} is
    * configured with. The initial value of this is the same as the {@code permitsPerSecond} argument
    * passed in the factory method that produced this {@code RateLimiter}, and it is only updated
-   * after invocations to {@linkplain #setRate}.
+   * after invocations to {@code #setRate}.
    */
   public final double getRate() {
     synchronized (mutex()) {
@@ -350,7 +346,7 @@ public abstract class RateLimiter {
   }
 
   /**
-   * Acquires permits from this {@link RateLimiter} if it can be acquired immediately without delay.
+   * Acquires permits from this {@code RateLimiter} if it can be acquired immediately without delay.
    *
    * <p>This method is equivalent to {@code tryAcquire(permits, 0, anyUnit)}.
    *
@@ -364,7 +360,7 @@ public abstract class RateLimiter {
   }
 
   /**
-   * Acquires a permit from this {@link RateLimiter} if it can be acquired immediately without
+   * Acquires a permit from this {@code RateLimiter} if it can be acquired immediately without
    * delay.
    *
    * <p>This method is equivalent to {@code tryAcquire(1)}.

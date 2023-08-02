@@ -17,11 +17,12 @@ package dev.mccue.guava.concurrent;
 import static dev.mccue.guava.concurrent.NullnessCasts.uncheckedCastNullableTToT;
 import static dev.mccue.guava.concurrent.Platform.restoreInterruptIfIsInterruptedException;
 
-
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.AbstractOwnableSynchronizer;
 import java.util.concurrent.locks.LockSupport;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+
 
 @ElementTypesAreNonnullByDefault
 // Some Android 5.0.x Samsung devices have bugs in JDK reflection APIs that cause
@@ -181,7 +182,7 @@ abstract class InterruptibleTask<T extends @Nullable Object>
   abstract void afterRanInterruptiblyFailure(Throwable error);
 
   /**
-   * Interrupts the running task. Because this internally calls {@link Thread#interrupt()} which can
+   * Interrupts the running task. Because this internally calls {@code Thread#interrupt()} which can
    * in turn invoke arbitrary code it is not safe to call while holding a lock.
    */
   final void interruptTask() {
@@ -214,7 +215,6 @@ abstract class InterruptibleTask<T extends @Nullable Object>
    * currentRunner thread is blocked on the progress of the interruptor thread, which can help
    * identify deadlocks.
    */
-  @VisibleForTesting
   static final class Blocker extends AbstractOwnableSynchronizer implements Runnable {
     private final InterruptibleTask<?> task;
 
@@ -229,7 +229,6 @@ abstract class InterruptibleTask<T extends @Nullable Object>
       super.setExclusiveOwnerThread(thread);
     }
 
-    @VisibleForTesting
     Thread getOwner() {
       return super.getExclusiveOwnerThread();
     }

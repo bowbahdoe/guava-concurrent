@@ -17,10 +17,11 @@ package dev.mccue.guava.concurrent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Hidden superclass of {@link FluentFuture} that provides us a place to declare special GWT
- * versions of the {@link FluentFuture#catching(Class, dev.mccue.guava.base.Function)
+ * Hidden superclass of {@code FluentFuture} that provides us a place to declare special GWT
+ * versions of the {@code FluentFuture#catching(Class, dev.mccue.guava.base.Function)
  * FluentFuture.catching} family of methods. Those versions have slightly different signatures.
  */
+
 // Super-sourced
 @ElementTypesAreNonnullByDefault
 abstract class GwtFluentFutureCatchingSpecialization<V extends @Nullable Object>

@@ -17,7 +17,7 @@ package dev.mccue.guava.concurrent;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * Unchecked version of {@link java.util.concurrent.TimeoutException}.
+ * Unchecked version of {@code java.util.concurrent.TimeoutException}.
  *
  * @author Kevin Bourrillion
  * @since 1.0

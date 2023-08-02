@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * An abstract {@code ScheduledExecutorService} that allows subclasses to {@linkplain
+ * An abstract {@code ScheduledExecutorService} that allows subclasses to {@code
  * #wrapTask(Callable) wrap} tasks before they are submitted to the underlying executor.
  *
  * <p>Note that task wrapping may occur even if the task is never executed.

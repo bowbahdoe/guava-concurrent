@@ -45,8 +45,8 @@ public abstract class InternalFutureFailureAccess {
    * </ul>
    *
    * <p>This method is {@code protected} so that classes like {@code
-   * com.google.common.util.concurrent.SettableFuture} do not expose it to their users as an
-   * instance method. In the unlikely event that you need to call this method, call {@link
+   * dev.mccue.guava.concurrent.SettableFuture} do not expose it to their users as an
+   * instance method. In the unlikely event that you need to call this method, call {@code
    * InternalFutures#tryInternalFastPathGetFailure(InternalFutureFailureAccess)}.
    */
   protected abstract

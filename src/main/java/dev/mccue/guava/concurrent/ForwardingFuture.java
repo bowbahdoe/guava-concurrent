@@ -24,11 +24,11 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link Future} which forwards all its method calls to another future. Subclasses should
+ * A {@code Future} which forwards all its method calls to another future. Subclasses should
  * override one or more methods to modify the behavior of the backing future as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * <p>Most subclasses can just use {@link SimpleForwardingFuture}.
+ * <p>Most subclasses can just use {@code SimpleForwardingFuture}.
  *
  * @author Sven Mawson
  * @since 1.0
@@ -75,8 +75,8 @@ public abstract class ForwardingFuture<V extends @Nullable Object> extends Forwa
 
   // TODO(cpovirk): Use standard Javadoc form for SimpleForwarding* class and constructor
   /**
-   * A simplified version of {@link ForwardingFuture} where subclasses can pass in an already
-   * constructed {@link Future} as the delegate.
+   * A simplified version of {@code ForwardingFuture} where subclasses can pass in an already
+   * constructed {@code Future} as the delegate.
    *
    * @since 9.0
    */

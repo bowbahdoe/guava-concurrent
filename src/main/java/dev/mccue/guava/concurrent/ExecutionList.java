@@ -25,14 +25,14 @@ import dev.mccue.jsr305.CheckForNull;
 /**
  * A support class for {@code ListenableFuture} implementations to manage their listeners. An
  * instance contains a list of listeners, each with an associated {@code Executor}, and guarantees
- * that every {@code Runnable} that is {@linkplain #add added} will be executed after {@link
+ * that every {@code Runnable} that is {@code #add added} will be executed after {@code
  * #execute()} is called. Any {@code Runnable} added after the call to {@code execute} is still
  * guaranteed to execute. There is no guarantee, however, that listeners will be executed in the
  * order that they are added.
  *
  * <p>Exceptions thrown by a listener will be propagated up to the executor. Any exception thrown
  * during {@code Executor.execute} (e.g., a {@code RejectedExecutionException} or an exception
- * thrown by {@linkplain MoreExecutors#directExecutor direct execution}) will be caught and logged.
+ * thrown by {@code MoreExecutors#directExecutor direct execution}) will be caught and logged.
  *
  * @author Nishant Thakkar
  * @author Sven Mawson
@@ -44,7 +44,7 @@ public final class ExecutionList {
   private static final Logger log = System.getLogger(ExecutionList.class.getName());
 
   /**
-   * The runnable, executor pairs to execute. This acts as a stack threaded through the {@link
+   * The runnable, executor pairs to execute. This acts as a stack threaded through the {@code
    * RunnableExecutorPair#next} field.
    */
   @GuardedBy("this")
@@ -54,7 +54,7 @@ public final class ExecutionList {
   @GuardedBy("this")
   private boolean executed;
 
-  /** Creates a new, empty {@link ExecutionList}. */
+  /** Creates a new, empty {@code ExecutionList}. */
   public ExecutionList() {}
 
   /**
@@ -62,7 +62,7 @@ public final class ExecutionList {
    * execute. If execution has already begun, the listener is executed immediately.
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link ListenableFuture#addListener ListenableFuture.addListener}
+   * the discussion in the {@code ListenableFuture#addListener ListenableFuture.addListener}
    * documentation.
    */
   public void add(Runnable runnable, Executor executor) {
@@ -133,7 +133,7 @@ public final class ExecutionList {
   }
 
   /**
-   * Submits the given runnable to the given {@link Executor} catching and logging all {@linkplain
+   * Submits the given runnable to the given {@code Executor} catching and logging all {@code
    * RuntimeException runtime exceptions} thrown by the executor.
    */
   private static void executeListener(Runnable runnable, Executor executor) {

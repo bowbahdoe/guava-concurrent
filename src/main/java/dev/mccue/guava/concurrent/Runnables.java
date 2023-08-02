@@ -14,8 +14,9 @@
 
 package dev.mccue.guava.concurrent;
 
+
 /**
- * Static utility methods pertaining to the {@link Runnable} interface.
+ * Static utility methods pertaining to the {@code Runnable} interface.
  *
  * @since 16.0
  */
@@ -28,7 +29,7 @@ public final class Runnables {
         public void run() {}
       };
 
-  /** Returns a {@link Runnable} instance that does nothing when run. */
+  /** Returns a {@code Runnable} instance that does nothing when run. */
   public static Runnable doNothing() {
     return EMPTY_RUNNABLE;
   }

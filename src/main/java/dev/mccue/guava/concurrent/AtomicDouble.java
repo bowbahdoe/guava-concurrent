@@ -19,22 +19,21 @@ import static java.lang.Double.doubleToRawLongBits;
 import static java.lang.Double.longBitsToDouble;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * A {@code double} value that may be updated atomically. See the {@link
+ * A {@code double} value that may be updated atomically. See the {@code
  * java.util.concurrent.atomic} package specification for description of the properties of atomic
  * variables. An {@code AtomicDouble} is used in applications such as atomic accumulation, and
- * cannot be used as a replacement for a {@link Double}. However, this class does extend {@code
+ * cannot be used as a replacement for a {@code Double}. However, this class does extend {@code
  * Number} to allow uniform access by tools and utilities that deal with numerically-based classes.
  *
  * <p><a id="bitEquals"></a>This class compares primitive {@code double} values in methods such as
- * {@link #compareAndSet} by comparing their bitwise representation using {@link
+ * {@code #compareAndSet} by comparing their bitwise representation using {@code
  * Double#doubleToRawLongBits}, which differs from both the primitive double {@code ==} operator and
- * from {@link Double#equals}, as if implemented by:
+ * from {@code Double#equals}, as if implemented by:
  *
  * <pre>{@code
  * static boolean bitEquals(double x, double y) {
@@ -53,6 +52,7 @@ import java.util.function.DoubleUnaryOperator;
  * @author Martin Buchholz
  * @since 11.0
  */
+
 @ElementTypesAreNonnullByDefault
 public class AtomicDouble extends Number implements java.io.Serializable {
   private static final long serialVersionUID = 0L;

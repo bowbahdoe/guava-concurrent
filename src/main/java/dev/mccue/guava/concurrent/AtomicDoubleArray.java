@@ -24,14 +24,14 @@ import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * A {@code double} array in which elements may be updated atomically. See the {@link
+ * A {@code double} array in which elements may be updated atomically. See the {@code
  * java.util.concurrent.atomic} package specification for description of the properties of atomic
  * variables.
  *
  * <p><a id="bitEquals"></a>This class compares primitive {@code double} values in methods such as
- * {@link #compareAndSet} by comparing their bitwise representation using {@link
+ * {@code #compareAndSet} by comparing their bitwise representation using {@code
  * Double#doubleToRawLongBits}, which differs from both the primitive double {@code ==} operator and
- * from {@link Double#equals}, as if implemented by:
+ * from {@code Double#equals}, as if implemented by:
  *
  * <pre>{@code
  * static boolean bitEquals(double x, double y) {
@@ -160,7 +160,7 @@ public class AtomicDoubleArray implements java.io.Serializable {
    * @return true if successful
    */
   public final boolean weakCompareAndSet(int i, double expect, double update) {
-    return longs.weakCompareAndSetPlain(i, doubleToRawLongBits(expect), doubleToRawLongBits(update));
+    return longs.weakCompareAndSet(i, doubleToRawLongBits(expect), doubleToRawLongBits(update));
   }
 
   /**

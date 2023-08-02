@@ -27,13 +27,13 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link FutureTask} that also implements the {@link ListenableFuture} interface. Unlike {@code
- * FutureTask}, {@code ListenableFutureTask} does not provide an overrideable {@link
- * FutureTask#done() done()} method. For similar functionality, call {@link #addListener}.
+ * A {@code FutureTask} that also implements the {@code ListenableFuture} interface. Unlike {@code
+ * FutureTask}, {@code ListenableFutureTask} does not provide an overrideable {@code
+ * FutureTask#done() done()} method. For similar functionality, call {@code #addListener}.
  *
  * <p>Few users should use this class. It is intended primarily for those who are implementing an
- * {@code ExecutorService}. Most users should call {@link ListeningExecutorService#submit(Callable)
- * ListeningExecutorService.submit} on a service obtained from {@link
+ * {@code ExecutorService}. Most users should call {@code ListeningExecutorService#submit(Callable)
+ * ListeningExecutorService.submit} on a service obtained from {@code
  * MoreExecutors#listeningDecorator}.
  *
  * @author Sven Mawson

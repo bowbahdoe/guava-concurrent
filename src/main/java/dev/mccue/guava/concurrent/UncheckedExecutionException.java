@@ -17,15 +17,15 @@ package dev.mccue.guava.concurrent;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * Unchecked variant of {@link java.util.concurrent.ExecutionException}. As with {@code
- * ExecutionException}, the exception's {@linkplain #getCause() cause} comes from a failed task,
+ * Unchecked variant of {@code java.util.concurrent.ExecutionException}. As with {@code
+ * ExecutionException}, the exception's {@code #getCause() cause} comes from a failed task,
  * possibly run in another thread.
  *
  * <p>{@code UncheckedExecutionException} is intended as an alternative to {@code
  * ExecutionException} when the exception thrown by a task is an unchecked exception. However, it
  * may also wrap a checked exception in some cases.
  *
- * <p>When wrapping an {@code Error} from another thread, prefer {@link ExecutionError}. When
+ * <p>When wrapping an {@code Error} from another thread, prefer {@code ExecutionError}. When
  * wrapping a checked exception, prefer {@code ExecutionException}.
  *
  * @author Charles Fry

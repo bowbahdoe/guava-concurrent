@@ -18,14 +18,14 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link ListenableFuture} whose result can be set by a {@link #set(Object)}, {@link
- * #setException(Throwable)} or {@link #setFuture(ListenableFuture)} call. It can also, like any
- * other {@code Future}, be {@linkplain #cancel cancelled}.
+ * A {@code ListenableFuture} whose result can be set by a {@code #set(Object)}, {@code
+ * #setException(Throwable)} or {@code #setFuture(ListenableFuture)} call. It can also, like any
+ * other {@code Future}, be {@code #cancel cancelled}.
  *
  * <p>{@code SettableFuture} is the recommended {@code ListenableFuture} implementation when your
- * task cannot be implemented with {@link ListeningExecutorService}, the various {@link Futures}
- * utility methods, or {@link ListenableFutureTask}. Those APIs have less opportunity for developer
- * error. If your needs are more complex than {@code SettableFuture} supports, use {@link
+ * task cannot be implemented with {@code ListeningExecutorService}, the various {@code Futures}
+ * utility methods, or {@code ListenableFutureTask}. Those APIs have less opportunity for developer
+ * error. If your needs are more complex than {@code SettableFuture} supports, use {@code
  * AbstractFuture}, which offers an extensible version of the API.
  *
  * @author Sven Mawson

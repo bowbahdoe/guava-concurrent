@@ -16,6 +16,9 @@ package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.base.Preconditions.checkNotNull;
 import static dev.mccue.guava.base.Preconditions.checkState;
+import static dev.mccue.guava.concurrent.ExecutionSequencer.RunningState.CANCELLED;
+import static dev.mccue.guava.concurrent.ExecutionSequencer.RunningState.NOT_RUN;
+import static dev.mccue.guava.concurrent.ExecutionSequencer.RunningState.STARTED;
 import static dev.mccue.guava.concurrent.Futures.immediateCancelledFuture;
 import static dev.mccue.guava.concurrent.Futures.immediateFuture;
 import static dev.mccue.guava.concurrent.Futures.immediateVoidFuture;
@@ -31,17 +34,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Serializes execution of tasks, somewhat like an "asynchronous {@code synchronized} block." Each
- * {@linkplain #submit enqueued} callable will not be submitted to its associated executor until the
- * previous callable has returned -- and, if the previous callable was an {@link AsyncCallable}, not
- * until the {@code Future} it returned is {@linkplain Future#isDone done} (successful, failed, or
+ * {@code #submit enqueued} callable will not be submitted to its associated executor until the
+ * previous callable has returned -- and, if the previous callable was an {@code AsyncCallable}, not
+ * until the {@code Future} it returned is {@code Future#isDone done} (successful, failed, or
  * cancelled).
  *
  * <p>This class serializes execution of <i>submitted</i> tasks but not any <i>listeners</i> of
  * those tasks.
  *
  * <p>Submitted tasks have a happens-before order as defined in the Java Language Specification.
- * Tasks execute with the same happens-before order that the function calls to {@link #submit} and
- * {@link #submitAsync} that submitted those tasks had.
+ * Tasks execute with the same happens-before order that the function calls to {@code #submit} and
+ * {@code #submitAsync} that submitted those tasks had.
  *
  * <p>This class has limited support for cancellation and other "early completions":
  *
@@ -58,13 +61,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *       be "done" as soon as <i>that</i> {@code Future} completes in any way. Notably, a {@code
  *       Future} is "completed" even if it is cancelled while its underlying work continues on a
  *       thread, an RPC, etc. The {@code Future} is also "completed" if it fails "early" -- for
- *       example, if the deadline expires on a {@code Future} returned from {@link
+ *       example, if the deadline expires on a {@code Future} returned from {@code
  *       Futures#withTimeout} while the {@code Future} it wraps continues its underlying work. So
  *       beware: <i>Your {@code AsyncCallable} should not complete its {@code Future} until it is
  *       safe for the next task to start.</i>
  * </ul>
  *
- * <p>This class is similar to {@link MoreExecutors#newSequentialExecutor}. This class is different
+ * <p>This class is similar to {@code MoreExecutors#newSequentialExecutor}. This class is different
  * in a few ways:
  *
  * <ul>
@@ -137,8 +140,8 @@ public final class ExecutionSequencer {
    * Enqueues a task to run when the previous task (if any) completes.
    *
    * <p>Cancellation does not propagate from the output future to a callable that has begun to
-   * execute, but if the output future is cancelled before {@link Callable#call()} is invoked,
-   * {@link Callable#call()} will not be invoked.
+   * execute, but if the output future is cancelled before {@code Callable#call()} is invoked,
+   * {@code Callable#call()} will not be invoked.
    */
   public <T extends @Nullable Object> ListenableFuture<T> submit(
       Callable<T> callable, Executor executor) {
@@ -164,7 +167,7 @@ public final class ExecutionSequencer {
    *
    * <p>Cancellation does not propagate from the output future to the future returned from {@code
    * callable} or a callable that has begun to execute, but if the output future is cancelled before
-   * {@link AsyncCallable#call()} is invoked, {@link AsyncCallable#call()} will not be invoked.
+   * {@code AsyncCallable#call()} is invoked, {@code AsyncCallable#call()} will not be invoked.
    */
   public <T extends @Nullable Object> ListenableFuture<T> submitAsync(
       AsyncCallable<T> callable, Executor executor) {
@@ -265,7 +268,7 @@ public final class ExecutionSequencer {
 
   /**
    * This class helps avoid a StackOverflowError when large numbers of tasks are submitted with
-   * {@link MoreExecutors#directExecutor}. Normally, when the first future completes, all the other
+   * {@code MoreExecutors#directExecutor}. Normally, when the first future completes, all the other
    * tasks would be called recursively. Here, we detect that the delegate executor is executing
    * inline, and maintain a queue to dispatch tasks iteratively. There is one instance of this class
    * per call to submit() or submitAsync(), and each instance supports only one call to execute().
@@ -306,7 +309,7 @@ public final class ExecutionSequencer {
     @CheckForNull Thread submitting;
 
     private TaskNonReentrantExecutor(Executor delegate, ExecutionSequencer sequencer) {
-      super(RunningState.NOT_RUN);
+      super(NOT_RUN);
       this.delegate = delegate;
       this.sequencer = sequencer;
     }
@@ -436,11 +439,11 @@ public final class ExecutionSequencer {
     }
 
     private boolean trySetStarted() {
-      return compareAndSet(RunningState.NOT_RUN, RunningState.STARTED);
+      return compareAndSet(NOT_RUN, STARTED);
     }
 
     private boolean trySetCancelled() {
-      return compareAndSet(RunningState.NOT_RUN, RunningState.CANCELLED);
+      return compareAndSet(NOT_RUN, CANCELLED);
     }
   }
 }

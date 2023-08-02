@@ -184,7 +184,7 @@ abstract class AbstractCatchingFuture<
   }
 
   /**
-   * An {@link AbstractCatchingFuture} that delegates to an {@link AsyncFunction} and {@link
+   * An {@code AbstractCatchingFuture} that delegates to an {@code AsyncFunction} and {@code
    * #setFuture(ListenableFuture)}.
    */
   private static final class AsyncCatchingFuture<V extends @Nullable Object, X extends Throwable>
@@ -216,7 +216,7 @@ abstract class AbstractCatchingFuture<
   }
 
   /**
-   * An {@link AbstractCatchingFuture} that delegates to a {@link Function} and {@link
+   * An {@code AbstractCatchingFuture} that delegates to a {@code Function} and {@code
    * #set(Object)}.
    */
   private static final class CatchingFuture<V extends @Nullable Object, X extends Throwable>

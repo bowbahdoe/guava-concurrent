@@ -30,8 +30,8 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * An {@link ExecutorService} that returns {@link ListenableFuture} instances. To create an instance
- * from an existing {@link ExecutorService}, call {@link
+ * An {@code ExecutorService} that returns {@code ListenableFuture} instances. To create an instance
+ * from an existing {@code ExecutorService}, call {@code
  * MoreExecutors#listeningDecorator(ExecutorService)}.
  *
  * @author Chris Povirk
@@ -67,7 +67,7 @@ public interface ListeningExecutorService extends ExecutorService {
   /**
    * {@inheritDoc}
    *
-   * <p>All elements in the returned list must be {@link ListenableFuture} instances. The easiest
+   * <p>All elements in the returned list must be {@code ListenableFuture} instances. The easiest
    * way to obtain a {@code List<ListenableFuture<T>>} from this method is an unchecked (but safe)
    * cast:
    *
@@ -89,7 +89,7 @@ public interface ListeningExecutorService extends ExecutorService {
   /**
    * {@inheritDoc}
    *
-   * <p>All elements in the returned list must be {@link ListenableFuture} instances. The easiest
+   * <p>All elements in the returned list must be {@code ListenableFuture} instances. The easiest
    * way to obtain a {@code List<ListenableFuture<T>>} from this method is an unchecked (but safe)
    * cast:
    *
@@ -111,7 +111,7 @@ public interface ListeningExecutorService extends ExecutorService {
       throws InterruptedException;
 
   /**
-   * Duration-based overload of {@link #invokeAll(Collection, long, TimeUnit)}.
+   * Duration-based overload of {@code #invokeAll(Collection, long, TimeUnit)}.
    *
    * @since 32.1.0
    */
@@ -121,7 +121,7 @@ public interface ListeningExecutorService extends ExecutorService {
   }
 
   /**
-   * Duration-based overload of {@link #invokeAny(Collection, long, TimeUnit)}.
+   * Duration-based overload of {@code #invokeAny(Collection, long, TimeUnit)}.
    *
    * @since 32.1.0
    */
@@ -132,7 +132,7 @@ public interface ListeningExecutorService extends ExecutorService {
   }
 
   /**
-   * Duration-based overload of {@link #awaitTermination(long, TimeUnit)}.
+   * Duration-based overload of {@code #awaitTermination(long, TimeUnit)}.
    *
    * @since 32.1.0
    */

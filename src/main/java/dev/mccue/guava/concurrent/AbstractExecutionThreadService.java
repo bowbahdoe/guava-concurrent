@@ -25,8 +25,8 @@ import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 
 /**
- * Base class for services that can implement {@link #startUp}, {@link #run} and {@link #shutDown}
- * methods. This class uses a single thread to execute the service; consider {@link AbstractService}
+ * Base class for services that can implement {@code #startUp}, {@code #run} and {@code #shutDown}
+ * methods. This class uses a single thread to execute the service; consider {@code AbstractService}
  * if you would like to manage any threading manually.
  *
  * @author Jesse Wilson
@@ -108,14 +108,14 @@ public abstract class AbstractExecutionThreadService implements Service {
    *
    * <pre>
    *   public void run() {
-   *     while ({@link #isRunning()}) {
+   *     while ({@code #isRunning()}) {
    *       // perform a unit of work
    *     }
    *   }
    * </pre>
    *
-   * <p>...or you could respond to stop requests by implementing {@link #triggerShutdown()}, which
-   * should cause {@link #run()} to return.
+   * <p>...or you could respond to stop requests by implementing {@code #triggerShutdown()}, which
+   * should cause {@code #run()} to return.
    */
   protected abstract void run() throws Exception;
 
@@ -141,14 +141,14 @@ public abstract class AbstractExecutionThreadService implements Service {
   protected void triggerShutdown() {}
 
   /**
-   * Returns the {@link Executor} that will be used to run this service. Subclasses may override
-   * this method to use a custom {@link Executor}, which may configure its worker thread with a
-   * specific name, thread group or priority. The returned executor's {@link
+   * Returns the {@code Executor} that will be used to run this service. Subclasses may override
+   * this method to use a custom {@code Executor}, which may configure its worker thread with a
+   * specific name, thread group or priority. The returned executor's {@code
    * Executor#execute(Runnable) execute()} method is called when this service is started, and should
    * return promptly.
    *
-   * <p>The default implementation returns a new {@link Executor} that sets the name of its threads
-   * to the string returned by {@link #serviceName}
+   * <p>The default implementation returns a new {@code Executor} that sets the name of its threads
+   * to the string returned by {@code #serviceName}
    */
   protected Executor executor() {
     return command -> MoreExecutors.newThread(serviceName(), command).start();
@@ -234,7 +234,7 @@ public abstract class AbstractExecutionThreadService implements Service {
   }
 
   /**
-   * Returns the name of this service. {@link AbstractExecutionThreadService} may include the name
+   * Returns the name of this service. {@code AbstractExecutionThreadService} may include the name
    * in debugging output.
    *
    * <p>Subclasses may override this method.

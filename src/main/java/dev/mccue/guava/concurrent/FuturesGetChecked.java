@@ -16,12 +16,11 @@ package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.base.Preconditions.checkArgument;
 import static java.lang.Thread.currentThread;
-
+import static java.util.Arrays.asList;
 
 import dev.mccue.guava.base.Function;
 import dev.mccue.guava.collect.Ordering;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeoutException;
 import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Static methods used to implement {@link Futures#getChecked(Future, Class)}. */
+/** Static methods used to implement {@code Futures#getChecked(Future, Class)}. */
 @ElementTypesAreNonnullByDefault
 final class FuturesGetChecked {
   @CanIgnoreReturnValue
@@ -46,9 +45,8 @@ final class FuturesGetChecked {
     return getChecked(bestGetCheckedTypeValidator(), future, exceptionClass);
   }
 
-  /** Implementation of {@link Futures#getChecked(Future, Class)}. */
+  /** Implementation of {@code Futures#getChecked(Future, Class)}. */
   @CanIgnoreReturnValue
-  @VisibleForTesting
   @ParametricNullness
   static <V extends @Nullable Object, X extends Exception> V getChecked(
       GetCheckedTypeValidator validator, Future<V> future, Class<X> exceptionClass) throws X {
@@ -64,7 +62,7 @@ final class FuturesGetChecked {
     }
   }
 
-  /** Implementation of {@link Futures#getChecked(Future, Class, long, TimeUnit)}. */
+  /** Implementation of {@code Futures#getChecked(Future, Class, long, TimeUnit)}. */
   @CanIgnoreReturnValue
   @ParametricNullness
   static <V extends @Nullable Object, X extends Exception> V getChecked(
@@ -84,7 +82,6 @@ final class FuturesGetChecked {
     }
   }
 
-  @VisibleForTesting
   interface GetCheckedTypeValidator {
     void validateClass(Class<? extends Exception> exceptionClass);
   }
@@ -93,24 +90,21 @@ final class FuturesGetChecked {
     return GetCheckedTypeValidatorHolder.BEST_VALIDATOR;
   }
 
-  @VisibleForTesting
   static GetCheckedTypeValidator weakSetValidator() {
     return GetCheckedTypeValidatorHolder.WeakSetValidator.INSTANCE;
   }
 
   // ClassValue
-  @VisibleForTesting
   static GetCheckedTypeValidator classValueValidator() {
     return GetCheckedTypeValidatorHolder.ClassValueValidator.INSTANCE;
   }
 
   /**
-   * Provides a check of whether an exception type is valid for use with {@link
+   * Provides a check of whether an exception type is valid for use with {@code
    * FuturesGetChecked#getChecked(Future, Class)}, possibly using caching.
    *
    * <p>Uses reflection to gracefully fall back to when certain implementations aren't available.
    */
-  @VisibleForTesting
   static class GetCheckedTypeValidatorHolder {
     static final String CLASS_VALUE_VALIDATOR_NAME =
         GetCheckedTypeValidatorHolder.class.getName() + "$ClassValueValidator";
@@ -254,7 +248,7 @@ final class FuturesGetChecked {
       Ordering.natural()
           .onResultOf(
               (Function<Constructor<?>, Boolean>)
-                  input -> Arrays.asList(input.getParameterTypes()).contains(String.class))
+                  input -> asList(input.getParameterTypes()).contains(String.class))
           .reverse();
 
   @CheckForNull
@@ -281,12 +275,10 @@ final class FuturesGetChecked {
     }
   }
 
-  @VisibleForTesting
   static boolean isCheckedException(Class<? extends Exception> type) {
     return !RuntimeException.class.isAssignableFrom(type);
   }
 
-  @VisibleForTesting
   static void checkExceptionClassValidity(Class<? extends Exception> exceptionClass) {
     checkArgument(
         isCheckedException(exceptionClass),

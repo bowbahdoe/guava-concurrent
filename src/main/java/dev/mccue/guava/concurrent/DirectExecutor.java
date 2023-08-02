@@ -17,7 +17,7 @@ package dev.mccue.guava.concurrent;
 import java.util.concurrent.Executor;
 
 /**
- * An {@link Executor} that runs each task in the thread that invokes {@link Executor#execute
+ * An {@code Executor} that runs each task in the thread that invokes {@code Executor#execute
  * execute}.
  */
 @ElementTypesAreNonnullByDefault

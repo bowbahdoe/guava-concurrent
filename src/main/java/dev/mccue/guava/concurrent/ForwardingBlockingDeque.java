@@ -23,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * A {@link BlockingDeque} which forwards all its method calls to another {@code BlockingDeque}.
+ * A {@code BlockingDeque} which forwards all its method calls to another {@code BlockingDeque}.
  * Subclasses should override one or more methods to modify the behavior of the backing deque as
  * desired per the <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
  * <p><b>Warning:</b> The methods of {@code ForwardingBlockingDeque} forward <b>indiscriminately</b>
- * to the methods of the delegate. For example, overriding {@link #add} alone <b>will not</b> change
- * the behaviour of {@link #offer} which can lead to unexpected behaviour. In this case, you should
+ * to the methods of the delegate. For example, overriding {@code #add} alone <b>will not</b> change
+ * the behaviour of {@code #offer} which can lead to unexpected behaviour. In this case, you should
  * override {@code offer} as well, either providing your own implementation, or delegating to the
  * provided {@code standardOffer} method.
  *
@@ -41,7 +41,7 @@ import dev.mccue.jsr305.CheckForNull;
  * methods that they depend on are thread-safe.
  *
  * @author Emily Soldal
- * @since 21.0 (since 14.0 as {@link dev.mccue.guava.collect.ForwardingBlockingDeque})
+ * @since 21.0 (since 14.0 as {@code dev.mccue.guava.collect.ForwardingBlockingDeque})
  */
 @ElementTypesAreNonnullByDefault
 public abstract class ForwardingBlockingDeque<E> extends ForwardingDeque<E>

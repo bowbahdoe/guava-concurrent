@@ -24,7 +24,7 @@ final class NullnessCasts {
    * Accepts a {@code @Nullable T} and returns a plain {@code T}, without performing any check that
    * that conversion is safe.
    *
-   * <p>This method is intended to help with usages of type parameters that have {@linkplain
+   * <p>This method is intended to help with usages of type parameters that have {@code
    * ParametricNullness parametric nullness}. If a type parameter instead ranges over only non-null
    * types (or if the type is a non-variable type, like {@code String}), then code should almost
    * never use this method, preferring instead to call {@code requireNonNull} so as to benefit from
@@ -57,7 +57,7 @@ final class NullnessCasts {
   /**
    * Returns {@code null} cast to any type.
    *
-   * <p>This method is intended to help with usages of type parameters that have {@linkplain
+   * <p>This method is intended to help with usages of type parameters that have {@code
    * ParametricNullness parametric nullness}. Sometimes, code may receive a null {@code T} but store
    * a "null sentinel" to take its place. When the time comes to convert it back to a {@code T} to
    * return to a caller, the code needs to a way to return {@code null} from a method that returns

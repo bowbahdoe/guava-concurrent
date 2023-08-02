@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link ListenableFuture} that supports fluent chains of operations. For example:
+ * A {@code ListenableFuture} that supports fluent chains of operations. For example:
  *
  * <pre>{@code
  * ListenableFuture<Boolean> adminIsLoggedIn =
@@ -39,9 +39,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *         .catching(RpcException.class, e -> false, directExecutor());
  * }</pre>
  *
- * <h2>Alternatives</h2>
+ * <h3>Alternatives</h3>
  *
- * <h3>Frameworks</h3>
+ * <h4>Frameworks</h4>
  *
  * <p>When chaining together a graph of asynchronous operations, you will often find it easier to
  * use a framework. Frameworks automate the process, often adding features like monitoring,
@@ -51,7 +51,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *   <li><a href="https://dagger.dev/producers.html">Dagger Producers</a>
  * </ul>
  *
- * <h4>{@link java.util.concurrent.CompletableFuture} / {@link java.util.concurrent.CompletionStage}
+ * <h4>{@code java.util.concurrent.CompletableFuture} / {@code java.util.concurrent.CompletionStage}
  * </h4>
  *
  * <p>Users of {@code CompletableFuture} will likely want to continue using {@code
@@ -63,20 +63,21 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <h3>Extension</h3>
  *
  * If you want a class like {@code FluentFuture} but with extra methods, we recommend declaring your
- * own subclass of {@link ListenableFuture}, complete with a method like {@link #from} to adapt an
- * existing {@code ListenableFuture}, implemented atop a {@link ForwardingListenableFuture} that
+ * own subclass of {@code ListenableFuture}, complete with a method like {@code #from} to adapt an
+ * existing {@code ListenableFuture}, implemented atop a {@code ForwardingListenableFuture} that
  * forwards to that future and adds the desired methods.
  *
  * @since 23.0
  */
 @DoNotMock("Use FluentFuture.from(Futures.immediate*Future) or SettableFuture")
+
 @ElementTypesAreNonnullByDefault
 public abstract class FluentFuture<V extends @Nullable Object>
     extends GwtFluentFutureCatchingSpecialization<V> {
 
   /**
    * A less abstract subclass of AbstractFuture. This can be used to optimize setFuture by ensuring
-   * that {@link #get} calls exactly the implementation of {@link AbstractFuture#get}.
+   * that {@code #get} calls exactly the implementation of {@code AbstractFuture#get}.
    */
   abstract static class TrustedFuture<V extends @Nullable Object> extends FluentFuture<V>
       implements AbstractFuture.Trusted<V> {
@@ -146,7 +147,7 @@ public abstract class FluentFuture<V extends @Nullable Object>
   /**
    * Returns a {@code Future} whose result is taken from this {@code Future} or, if this {@code
    * Future} fails with the given {@code exceptionType}, from the result provided by the {@code
-   * fallback}. {@link Function#apply} is not invoked until the primary input has failed, so if the
+   * fallback}. {@code Function#apply} is not invoked until the primary input has failed, so if the
    * primary input succeeds, it is never invoked. If, during the invocation of {@code fallback}, an
    * exception is thrown, this exception is used as the result of the output {@code Future}.
    *
@@ -160,23 +161,23 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link #addListener} documentation. All its warnings about heavyweight
+   * the discussion in the {@code #addListener} documentation. All its warnings about heavyweight
    * listeners are also applicable to heavyweight functions passed to this method.
    *
-   * <p>This method is similar to {@link java.util.concurrent.CompletableFuture#exceptionally}. It
-   * can also serve some of the use cases of {@link java.util.concurrent.CompletableFuture#handle}
-   * and {@link java.util.concurrent.CompletableFuture#handleAsync} when used along with {@link
+   * <p>This method is similar to {@code java.util.concurrent.CompletableFuture#exceptionally}. It
+   * can also serve some of the use cases of {@code java.util.concurrent.CompletableFuture#handle}
+   * and {@code java.util.concurrent.CompletableFuture#handleAsync} when used along with {@code
    * #transform}.
    *
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against the input's exception. "The input's exception" means the cause of
-   *     the {@link ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
+   *     the {@code ExecutionException} thrown by {@code input.get()} or, if {@code get()} throws a
    *     different kind of exception, that exception itself. To avoid hiding bugs and other
    *     unrecoverable errors, callers should prefer more specific types, avoiding {@code
    *     Throwable.class} in particular.
-   * @param fallback the {@link Function} to be called if the input fails with the expected
+   * @param fallback the {@code Function} to be called if the input fails with the expected
    *     exception type. The function's argument is the input's exception. "The input's exception"
-   *     means the cause of the {@link ExecutionException} thrown by {@code this.get()} or, if
+   *     means the cause of the {@code ExecutionException} thrown by {@code this.get()} or, if
    *     {@code get()} throws a different kind of exception, that exception itself.
    * @param executor the executor that runs {@code fallback} if the input fails
    */
@@ -189,7 +190,7 @@ public abstract class FluentFuture<V extends @Nullable Object>
   /**
    * Returns a {@code Future} whose result is taken from this {@code Future} or, if this {@code
    * Future} fails with the given {@code exceptionType}, from the result provided by the {@code
-   * fallback}. {@link AsyncFunction#apply} is not invoked until the primary input has failed, so if
+   * fallback}. {@code AsyncFunction#apply} is not invoked until the primary input has failed, so if
    * the primary input succeeds, it is never invoked. If, during the invocation of {@code fallback},
    * an exception is thrown, this exception is used as the result of the output {@code Future}.
    *
@@ -221,26 +222,26 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link #addListener} documentation. All its warnings about heavyweight
+   * the discussion in the {@code #addListener} documentation. All its warnings about heavyweight
    * listeners are also applicable to heavyweight functions passed to this method. (Specifically,
    * {@code directExecutor} functions should avoid heavyweight operations inside {@code
    * AsyncFunction.apply}. Any heavyweight operations should occur in other threads responsible for
    * completing the returned {@code Future}.)
    *
-   * <p>This method is similar to {@link java.util.concurrent.CompletableFuture#exceptionally}. It
-   * can also serve some of the use cases of {@link java.util.concurrent.CompletableFuture#handle}
-   * and {@link java.util.concurrent.CompletableFuture#handleAsync} when used along with {@link
+   * <p>This method is similar to {@code java.util.concurrent.CompletableFuture#exceptionally}. It
+   * can also serve some of the use cases of {@code java.util.concurrent.CompletableFuture#handle}
+   * and {@code java.util.concurrent.CompletableFuture#handleAsync} when used along with {@code
    * #transform}.
    *
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against the input's exception. "The input's exception" means the cause of
-   *     the {@link ExecutionException} thrown by {@code this.get()} or, if {@code get()} throws a
+   *     the {@code ExecutionException} thrown by {@code this.get()} or, if {@code get()} throws a
    *     different kind of exception, that exception itself. To avoid hiding bugs and other
    *     unrecoverable errors, callers should prefer more specific types, avoiding {@code
    *     Throwable.class} in particular.
-   * @param fallback the {@link AsyncFunction} to be called if the input fails with the expected
+   * @param fallback the {@code AsyncFunction} to be called if the input fails with the expected
    *     exception type. The function's argument is the input's exception. "The input's exception"
-   *     means the cause of the {@link ExecutionException} thrown by {@code input.get()} or, if
+   *     means the cause of the {@code ExecutionException} thrown by {@code input.get()} or, if
    *     {@code get()} throws a different kind of exception, that exception itself.
    * @param executor the executor that runs {@code fallback} if the input fails
    */
@@ -251,8 +252,8 @@ public abstract class FluentFuture<V extends @Nullable Object>
   }
 
   /**
-   * Returns a future that delegates to this future but will finish early (via a {@link
-   * TimeoutException} wrapped in an {@link ExecutionException}) if the specified timeout expires.
+   * Returns a future that delegates to this future but will finish early (via a {@code
+   * TimeoutException} wrapped in an {@code ExecutionException}) if the specified timeout expires.
    * If the timeout expires, not only will the output future finish, but also the input future
    * ({@code this}) will be cancelled and interrupted.
    *
@@ -267,8 +268,8 @@ public abstract class FluentFuture<V extends @Nullable Object>
   }
 
   /**
-   * Returns a future that delegates to this future but will finish early (via a {@link
-   * TimeoutException} wrapped in an {@link ExecutionException}) if the specified timeout expires.
+   * Returns a future that delegates to this future but will finish early (via a {@code
+   * TimeoutException} wrapped in an {@code ExecutionException}) if the specified timeout expires.
    * If the timeout expires, not only will the output future finish, but also the input future
    * ({@code this}) will be cancelled and interrupted.
    *
@@ -299,7 +300,7 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link #addListener} documentation. All its warnings about heavyweight
+   * the discussion in the {@code #addListener} documentation. All its warnings about heavyweight
    * listeners are also applicable to heavyweight functions passed to this method. (Specifically,
    * {@code directExecutor} functions should avoid heavyweight operations inside {@code
    * AsyncFunction.apply}. Any heavyweight operations should occur in other threads responsible for
@@ -311,10 +312,10 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * other two is cancelled, the returned {@code Future} will receive a callback in which it will
    * attempt to cancel itself.
    *
-   * <p>This method is similar to {@link java.util.concurrent.CompletableFuture#thenCompose} and
-   * {@link java.util.concurrent.CompletableFuture#thenComposeAsync}. It can also serve some of the
-   * use cases of {@link java.util.concurrent.CompletableFuture#handle} and {@link
-   * java.util.concurrent.CompletableFuture#handleAsync} when used along with {@link #catching}.
+   * <p>This method is similar to {@code java.util.concurrent.CompletableFuture#thenCompose} and
+   * {@code java.util.concurrent.CompletableFuture#thenComposeAsync}. It can also serve some of the
+   * use cases of {@code java.util.concurrent.CompletableFuture#handle} and {@code
+   * java.util.concurrent.CompletableFuture#handleAsync} when used along with {@code #catching}.
    *
    * @param function A function to transform the result of this future to the result of the output
    *     future
@@ -338,7 +339,7 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link #addListener} documentation. All its warnings about heavyweight
+   * the discussion in the {@code #addListener} documentation. All its warnings about heavyweight
    * listeners are also applicable to heavyweight functions passed to this method.
    *
    * <p>The returned {@code Future} attempts to keep its cancellation state in sync with that of the
@@ -349,10 +350,10 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * <p>An example use of this method is to convert a serializable object returned from an RPC into
    * a POJO.
    *
-   * <p>This method is similar to {@link java.util.concurrent.CompletableFuture#thenApply} and
-   * {@link java.util.concurrent.CompletableFuture#thenApplyAsync}. It can also serve some of the
-   * use cases of {@link java.util.concurrent.CompletableFuture#handle} and {@link
-   * java.util.concurrent.CompletableFuture#handleAsync} when used along with {@link #catching}.
+   * <p>This method is similar to {@code java.util.concurrent.CompletableFuture#thenApply} and
+   * {@code java.util.concurrent.CompletableFuture#thenApplyAsync}. It can also serve some of the
+   * use cases of {@code java.util.concurrent.CompletableFuture#handle} and {@code
+   * java.util.concurrent.CompletableFuture#handleAsync} when used along with {@code #catching}.
    *
    * @param function A Function to transform the results of this future to the results of the
    *     returned future.
@@ -366,7 +367,7 @@ public abstract class FluentFuture<V extends @Nullable Object>
 
   /**
    * Registers separate success and failure callbacks to be run when this {@code Future}'s
-   * computation is {@linkplain java.util.concurrent.Future#isDone() complete} or, if the
+   * computation is {@code java.util.concurrent.Future#isDone() complete} or, if the
    * computation is already complete, immediately.
    *
    * <p>The callback is run on {@code executor}. There is no guaranteed ordering of execution of
@@ -388,14 +389,14 @@ public abstract class FluentFuture<V extends @Nullable Object>
    * }</pre>
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link #addListener} documentation. All its warnings about heavyweight
+   * the discussion in the {@code #addListener} documentation. All its warnings about heavyweight
    * listeners are also applicable to heavyweight callbacks passed to this method.
    *
-   * <p>For a more general interface to attach a completion listener, see {@link #addListener}.
+   * <p>For a more general interface to attach a completion listener, see {@code #addListener}.
    *
-   * <p>This method is similar to {@link java.util.concurrent.CompletableFuture#whenComplete} and
-   * {@link java.util.concurrent.CompletableFuture#whenCompleteAsync}. It also serves the use case
-   * of {@link java.util.concurrent.CompletableFuture#thenAccept} and {@link
+   * <p>This method is similar to {@code java.util.concurrent.CompletableFuture#whenComplete} and
+   * {@code java.util.concurrent.CompletableFuture#whenCompleteAsync}. It also serves the use case
+   * of {@code java.util.concurrent.CompletableFuture#thenAccept} and {@code
    * java.util.concurrent.CompletableFuture#thenAcceptAsync}.
    *
    * @param callback The callback to invoke when this {@code Future} is completed.

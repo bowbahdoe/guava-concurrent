@@ -23,9 +23,9 @@ import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link RunnableFuture} that also implements the {@link ListenableFuture} interface.
+ * A {@code RunnableFuture} that also implements the {@code ListenableFuture} interface.
  *
- * <p>This should be used in preference to {@link ListenableFutureTask} when possible for
+ * <p>This should be used in preference to {@code ListenableFutureTask} when possible for
  * performance reasons.
  */
 @ElementTypesAreNonnullByDefault

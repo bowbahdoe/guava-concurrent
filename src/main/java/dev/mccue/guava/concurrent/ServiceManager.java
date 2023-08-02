@@ -50,7 +50,6 @@ import dev.mccue.guava.collect.SetMultimap;
 import dev.mccue.guava.concurrent.Service.State;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
-
 import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.Collections;
@@ -65,16 +64,16 @@ import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 
 /**
- * A manager for monitoring and controlling a set of {@linkplain Service services}. This class
- * provides methods for {@linkplain #startAsync() starting}, {@linkplain #stopAsync() stopping} and
- * {@linkplain #servicesByState inspecting} a collection of {@linkplain Service services}.
- * Additionally, users can monitor state transitions with the {@linkplain Listener listener}
+ * A manager for monitoring and controlling a set of {@code Service services}. This class
+ * provides methods for {@code #startAsync() starting}, {@code #stopAsync() stopping} and
+ * {@code #servicesByState inspecting} a collection of {@code Service services}.
+ * Additionally, users can monitor state transitions with the {@code Listener listener}
  * mechanism.
  *
  * <p>While it is recommended that service lifecycles be managed via this class, state transitions
  * initiated via other mechanisms do not impact the correctness of its methods. For example, if the
- * services are started by some mechanism besides {@link #startAsync}, the listeners will be invoked
- * when appropriate and {@link #awaitHealthy} will still work as expected.
+ * services are started by some mechanism besides {@code #startAsync}, the listeners will be invoked
+ * when appropriate and {@code #awaitHealthy} will still work as expected.
  *
  * <p>Here is a simple example of how to use a {@code ServiceManager} to start a server.
  *
@@ -148,8 +147,8 @@ public final class ServiceManager implements ServiceManagerBridge {
 
   /**
    * A listener for the aggregate state changes of the services that are under management. Users
-   * that need to listen to more fine-grained events (such as when each particular {@linkplain
-   * Service service} starts, or terminates), should attach {@linkplain Service.Listener service
+   * that need to listen to more fine-grained events (such as when each particular {@code
+   * Service service} starts, or terminates), should attach {@code Service.Listener service
    * listeners} to each individual service.
    *
    * @author Luke Sandberg
@@ -159,21 +158,21 @@ public final class ServiceManager implements ServiceManagerBridge {
     /**
      * Called when the service initially becomes healthy.
      *
-     * <p>This will be called at most once after all the services have entered the {@linkplain
-     * State#RUNNING running} state. If any services fail during start up or {@linkplain
-     * State#FAILED fail}/{@linkplain State#TERMINATED terminate} before all other services have
-     * started {@linkplain State#RUNNING running} then this method will not be called.
+     * <p>This will be called at most once after all the services have entered the {@code
+     * State#RUNNING running} state. If any services fail during start up or {@code
+     * State#FAILED fail}/{@code State#TERMINATED terminate} before all other services have
+     * started {@code State#RUNNING running} then this method will not be called.
      */
     public void healthy() {}
 
     /**
      * Called when the all of the component services have reached a terminal state, either
-     * {@linkplain State#TERMINATED terminated} or {@linkplain State#FAILED failed}.
+     * {@code State#TERMINATED terminated} or {@code State#FAILED failed}.
      */
     public void stopped() {}
 
     /**
-     * Called when a component service has {@linkplain State#FAILED failed}.
+     * Called when a component service has {@code State#FAILED failed}.
      *
      * @param service The service that failed.
      */
@@ -181,10 +180,10 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * An encapsulation of all of the state that is accessed by the {@linkplain ServiceListener
-   * service listeners}. This is extracted into its own object so that {@link ServiceListener} could
-   * be made {@code static} and its instances can be safely constructed and added in the {@link
-   * ServiceManager} constructor without having to close over the partially constructed {@link
+   * An encapsulation of all of the state that is accessed by the {@code ServiceListener
+   * service listeners}. This is extracted into its own object so that {@code ServiceListener} could
+   * be made {@code static} and its instances can be safely constructed and added in the {@code
+   * ServiceManager} constructor without having to close over the partially constructed {@code
    * ServiceManager} instance (i.e. avoid leaking a pointer to {@code this}).
    */
   private final ServiceManagerState state;
@@ -195,7 +194,7 @@ public final class ServiceManager implements ServiceManagerBridge {
    * Constructs a new instance for managing the given services.
    *
    * @param services The services to manage
-   * @throws IllegalArgumentException if not all services are {@linkplain State#NEW new} or if there
+   * @throws IllegalArgumentException if not all services are {@code State#NEW new} or if there
    *     are any duplicate services.
    */
   public ServiceManager(Iterable<? extends Service> services) {
@@ -224,9 +223,9 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Registers a {@link Listener} to be {@linkplain Executor#execute executed} on the given
+   * Registers a {@code Listener} to be {@code Executor#execute executed} on the given
    * executor. The listener will not have previous state changes replayed, so it is suggested that
-   * listeners are added before any of the managed services are {@linkplain Service#startAsync
+   * listeners are added before any of the managed services are {@code Service#startAsync
    * started}.
    *
    * <p>{@code addListener} guarantees execution ordering across calls to a given listener but not
@@ -241,7 +240,7 @@ public final class ServiceManager implements ServiceManagerBridge {
    * logged.
    *
    * <p>When selecting an executor, note that {@code directExecutor} is dangerous in some cases. See
-   * the discussion in the {@link ListenableFuture#addListener ListenableFuture.addListener}
+   * the discussion in the {@code ListenableFuture#addListener ListenableFuture.addListener}
    * documentation.
    *
    * @param listener the listener to run when the manager changes state
@@ -252,11 +251,11 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Initiates service {@linkplain Service#startAsync startup} on all the services being managed. It
-   * is only valid to call this method if all of the services are {@linkplain State#NEW new}.
+   * Initiates service {@code Service#startAsync startup} on all the services being managed. It
+   * is only valid to call this method if all of the services are {@code State#NEW new}.
    *
    * @return this
-   * @throws IllegalStateException if any of the Services are not {@link State#NEW new} when the
+   * @throws IllegalStateException if any of the Services are not {@code State#NEW new} when the
    *     method is called.
    */
   @CanIgnoreReturnValue
@@ -280,26 +279,26 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Waits for the {@link ServiceManager} to become {@linkplain #isHealthy() healthy}. The manager
-   * will become healthy after all the component services have reached the {@linkplain State#RUNNING
+   * Waits for the {@code ServiceManager} to become {@code #isHealthy() healthy}. The manager
+   * will become healthy after all the component services have reached the {@code State#RUNNING
    * running} state.
    *
    * @throws IllegalStateException if the service manager reaches a state from which it cannot
-   *     become {@linkplain #isHealthy() healthy}.
+   *     become {@code #isHealthy() healthy}.
    */
   public void awaitHealthy() {
     state.awaitHealthy();
   }
 
   /**
-   * Waits for the {@link ServiceManager} to become {@linkplain #isHealthy() healthy} for no more
+   * Waits for the {@code ServiceManager} to become {@code #isHealthy() healthy} for no more
    * than the given time. The manager will become healthy after all the component services have
-   * reached the {@linkplain State#RUNNING running} state.
+   * reached the {@code State#RUNNING running} state.
    *
    * @param timeout the maximum time to wait
    * @throws TimeoutException if not all of the services have finished starting within the deadline
    * @throws IllegalStateException if the service manager reaches a state from which it cannot
-   *     become {@linkplain #isHealthy() healthy}.
+   *     become {@code #isHealthy() healthy}.
    * @since 28.0
    */
   public void awaitHealthy(Duration timeout) throws TimeoutException {
@@ -307,15 +306,15 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Waits for the {@link ServiceManager} to become {@linkplain #isHealthy() healthy} for no more
+   * Waits for the {@code ServiceManager} to become {@code #isHealthy() healthy} for no more
    * than the given time. The manager will become healthy after all the component services have
-   * reached the {@linkplain State#RUNNING running} state.
+   * reached the {@code State#RUNNING running} state.
    *
    * @param timeout the maximum time to wait
    * @param unit the time unit of the timeout argument
    * @throws TimeoutException if not all of the services have finished starting within the deadline
    * @throws IllegalStateException if the service manager reaches a state from which it cannot
-   *     become {@linkplain #isHealthy() healthy}.
+   *     become {@code #isHealthy() healthy}.
    */
   @SuppressWarnings("GoodTime") // should accept a java.time.Duration
   public void awaitHealthy(long timeout, TimeUnit unit) throws TimeoutException {
@@ -323,7 +322,7 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Initiates service {@linkplain Service#stopAsync shutdown} if necessary on all the services
+   * Initiates service {@code Service#stopAsync shutdown} if necessary on all the services
    * being managed.
    *
    * @return this
@@ -338,7 +337,7 @@ public final class ServiceManager implements ServiceManagerBridge {
 
   /**
    * Waits for the all the services to reach a terminal state. After this method returns all
-   * services will either be {@linkplain Service.State#TERMINATED terminated} or {@linkplain
+   * services will either be {@code Service.State#TERMINATED terminated} or {@code
    * Service.State#FAILED failed}.
    */
   public void awaitStopped() {
@@ -347,8 +346,8 @@ public final class ServiceManager implements ServiceManagerBridge {
 
   /**
    * Waits for the all the services to reach a terminal state for no more than the given time. After
-   * this method returns all services will either be {@linkplain Service.State#TERMINATED
-   * terminated} or {@linkplain Service.State#FAILED failed}.
+   * this method returns all services will either be {@code Service.State#TERMINATED
+   * terminated} or {@code Service.State#FAILED failed}.
    *
    * @param timeout the maximum time to wait
    * @throws TimeoutException if not all of the services have stopped within the deadline
@@ -360,8 +359,8 @@ public final class ServiceManager implements ServiceManagerBridge {
 
   /**
    * Waits for the all the services to reach a terminal state for no more than the given time. After
-   * this method returns all services will either be {@linkplain Service.State#TERMINATED
-   * terminated} or {@linkplain Service.State#FAILED failed}.
+   * this method returns all services will either be {@code Service.State#TERMINATED
+   * terminated} or {@code Service.State#FAILED failed}.
    *
    * @param timeout the maximum time to wait
    * @param unit the time unit of the timeout argument
@@ -373,9 +372,9 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * Returns true if all services are currently in the {@linkplain State#RUNNING running} state.
+   * Returns true if all services are currently in the {@code State#RUNNING running} state.
    *
-   * <p>Users who want more detailed information should use the {@link #servicesByState} method to
+   * <p>Users who want more detailed information should use the {@code #servicesByState} method to
    * get detailed information about which services are not running.
    */
   public boolean isHealthy() {
@@ -432,8 +431,8 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * An encapsulation of all the mutable state of the {@link ServiceManager} that needs to be
-   * accessed by instances of {@link ServiceListener}.
+   * An encapsulation of all the mutable state of the {@code ServiceManager} that needs to be
+   * accessed by instances of {@code ServiceListener}.
    */
   private static final class ServiceManagerState {
     final Monitor monitor = new Monitor();
@@ -451,10 +450,10 @@ public final class ServiceManager implements ServiceManagerBridge {
     /**
      * These two booleans are used to mark the state as ready to start.
      *
-     * <p>{@link #ready}: is set by {@link #markReady} to indicate that all listeners have been
+     * <p>{@code #ready}: is set by {@code #markReady} to indicate that all listeners have been
      * correctly installed
      *
-     * <p>{@link #transitioned}: is set by {@link #transitionService} to indicate that some
+     * <p>{@code #transitioned}: is set by {@code #transitionService} to indicate that some
      * transition has been performed.
      *
      * <p>Together, they allow us to enforce that all services have their listeners installed prior
@@ -511,8 +510,8 @@ public final class ServiceManager implements ServiceManagerBridge {
 
     /**
      * It is implicitly assumed that all the services are NEW and that they will all remain NEW
-     * until all the Listeners are installed and {@link #markReady()} is called. It is our caller's
-     * responsibility to only call {@link #markReady()} if all services were new at the time this
+     * until all the Listeners are installed and {@code #markReady()} is called. It is our caller's
+     * responsibility to only call {@code #markReady()} if all services were new at the time this
      * method was called and when all the listeners were installed.
      */
     ServiceManagerState(ImmutableCollection<Service> services) {
@@ -521,7 +520,7 @@ public final class ServiceManager implements ServiceManagerBridge {
     }
 
     /**
-     * Attempts to start the timer immediately prior to the service being started via {@link
+     * Attempts to start the timer immediately prior to the service being started via {@code
      * Service#startAsync()}.
      */
     void tryStartTiming(Service service) {
@@ -537,7 +536,7 @@ public final class ServiceManager implements ServiceManagerBridge {
     }
 
     /**
-     * Marks the {@link State} as ready to receive transitions. Returns true if no transitions have
+     * Marks the {@code State} as ready to receive transitions. Returns true if no transitions have
      * been observed yet.
      */
     void markReady() {
@@ -661,8 +660,8 @@ public final class ServiceManager implements ServiceManagerBridge {
      * <p>This method performs the main logic of ServiceManager in the following steps.
      *
      * <ol>
-     *   <li>Update the {@link #servicesByState()}
-     *   <li>Update the {@link #startupTimers}
+     *   <li>Update the {@code #servicesByState()}
+     *   <li>Update the {@code #startupTimers}
      *   <li>Based on the new state queue listeners to run
      *   <li>Run the listeners (outside of the lock)
      * </ol>
@@ -745,7 +744,7 @@ public final class ServiceManager implements ServiceManagerBridge {
           });
     }
 
-    /** Attempts to execute all the listeners in {@link #listeners}. */
+    /** Attempts to execute all the listeners in {@code #listeners}. */
     void dispatchListenerEvents() {
       checkState(
           !monitor.isOccupiedByCurrentThread(),
@@ -769,8 +768,8 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * A {@link Service} that wraps another service and times how long it takes for it to start and
-   * also calls the {@link ServiceManagerState#transitionService(Service, State, State)}, to record
+   * A {@code Service} that wraps another service and times how long it takes for it to start and
+   * also calls the {@code ServiceManagerState#transitionService(Service, State, State)}, to record
    * the state transitions.
    */
   private static final class ServiceListener extends Service.Listener {
@@ -849,11 +848,11 @@ public final class ServiceManager implements ServiceManagerBridge {
   }
 
   /**
-   * A {@link Service} instance that does nothing. This is only useful as a placeholder to ensure
-   * that the {@link ServiceManager} functions properly even when it is managing no services.
+   * A {@code Service} instance that does nothing. This is only useful as a placeholder to ensure
+   * that the {@code ServiceManager} functions properly even when it is managing no services.
    *
    * <p>The use of this class is considered an implementation detail of ServiceManager and as such
-   * it is excluded from {@link #servicesByState}, {@link #startupTimes}, {@link #toString} and all
+   * it is excluded from {@code #servicesByState}, {@code #startupTimes}, {@code #toString} and all
    * logging statements.
    */
   private static final class NoOpService extends AbstractService {

@@ -17,7 +17,6 @@ package dev.mccue.guava.concurrent;
 import static dev.mccue.guava.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
-
 import dev.mccue.guava.base.MoreObjects;
 import dev.mccue.guava.base.Preconditions;
 import dev.mccue.guava.collect.ImmutableSet;
@@ -25,7 +24,6 @@ import dev.mccue.guava.collect.Lists;
 import dev.mccue.guava.collect.MapMaker;
 import dev.mccue.guava.collect.Maps;
 import dev.mccue.guava.collect.Sets;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,12 +41,12 @@ import java.lang.System.Logger;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * The {@code CycleDetectingLockFactory} creates {@link ReentrantLock} instances and {@link
+ * The {@code CycleDetectingLockFactory} creates {@code ReentrantLock} instances and {@code
  * ReentrantReadWriteLock} instances that detect potential deadlock by checking for cycles in lock
  * acquisition order.
  *
  * <p>Potential deadlocks detected when calling the {@code lock()}, {@code lockInterruptibly()}, or
- * {@code tryLock()} methods will result in the execution of the {@link Policy} specified when
+ * {@code tryLock()} methods will result in the execution of the {@code Policy} specified when
  * creating the factory. The currently available policies are:
  *
  * <ul>
@@ -124,7 +122,7 @@ import dev.mccue.jsr305.CheckForNull;
  *
  * <p><strong>Explicit Lock Acquisition Ordering</strong>
  *
- * <p>The {@link WithExplicitOrdering} class can be used to enforce an
+ * <p>The {@code CycleDetectingLockFactory.WithExplicitOrdering} class can be used to enforce an
  * application-specific ordering in addition to performing general cycle detection.
  *
  * <p><strong>Garbage Collection</strong>
@@ -162,7 +160,7 @@ public class CycleDetectingLockFactory {
 
   /**
    * Encapsulates the action to be taken when a potential deadlock is encountered. Clients can use
-   * one of the predefined {@link Policies} or specify a custom implementation. Implementations must
+   * one of the predefined {@code Policies} or specify a custom implementation. Implementations must
    * be thread-safe.
    *
    * @since 13.0
@@ -182,7 +180,7 @@ public class CycleDetectingLockFactory {
   }
 
   /**
-   * Pre-defined {@link Policy} implementations.
+   * Pre-defined {@code Policy} implementations.
    *
    * @since 13.0
    */
@@ -200,7 +198,7 @@ public class CycleDetectingLockFactory {
     },
 
     /**
-     * When potential deadlock is detected, this policy results in the logging of a {@link
+     * When potential deadlock is detected, this policy results in the logging of a {@code
      * Level#ERROR} message indicating the potential deadlock, which includes stack traces
      * illustrating the cycle in lock acquisition order.
      */
@@ -236,7 +234,7 @@ public class CycleDetectingLockFactory {
   }
 
   /**
-   * Creates a {@link ReentrantLock} with the given fairness policy. The {@code lockName} is used in
+   * Creates a {@code ReentrantLock} with the given fairness policy. The {@code lockName} is used in
    * the warning or exception output to help identify the locks involved in the detected deadlock.
    */
   public ReentrantLock newReentrantLock(String lockName, boolean fair) {
@@ -251,7 +249,7 @@ public class CycleDetectingLockFactory {
   }
 
   /**
-   * Creates a {@link ReentrantReadWriteLock} with the given fairness policy. The {@code lockName}
+   * Creates a {@code ReentrantReadWriteLock} with the given fairness policy. The {@code lockName}
    * is used in the warning or exception output to help identify the locks involved in the detected
    * deadlock.
    */
@@ -296,7 +294,6 @@ public class CycleDetectingLockFactory {
    * disallowedPriorLocks} prepopulated with nodes according to the natural ordering of the
    * associated Enum values.
    */
-  @VisibleForTesting
   static <E extends Enum<E>> Map<E, LockGraphNode> createNodes(Class<E> clazz) {
     EnumMap<E, LockGraphNode> map = Maps.newEnumMap(clazz);
     E[] keys = clazz.getEnumConstants();
@@ -332,7 +329,7 @@ public class CycleDetectingLockFactory {
    * an application-specified ordering of lock acquisitions. The application defines the allowed
    * ordering with an {@code Enum} whose values each correspond to a lock type. The order in which
    * the values are declared dictates the allowed order of lock acquisition. In other words, locks
-   * corresponding to smaller values of {@link Enum#ordinal()} should only be acquired before locks
+   * corresponding to smaller values of {@code Enum#ordinal()} should only be acquired before locks
    * with larger ordinals. Example:
    *
    * <pre>{@code
@@ -391,7 +388,6 @@ public class CycleDetectingLockFactory {
 
     private final Map<E, LockGraphNode> lockGraphNodes;
 
-    @VisibleForTesting
     WithExplicitOrdering(Policy policy, Map<E, LockGraphNode> lockGraphNodes) {
       super(policy);
       this.lockGraphNodes = lockGraphNodes;
@@ -403,8 +399,8 @@ public class CycleDetectingLockFactory {
     }
 
     /**
-     * Creates a {@link ReentrantLock} with the given fairness policy and rank. The values returned
-     * by {@link Enum#getDeclaringClass()} and {@link Enum#name()} are used to describe the lock in
+     * Creates a {@code ReentrantLock} with the given fairness policy and rank. The values returned
+     * by {@code Enum#getDeclaringClass()} and {@code Enum#name()} are used to describe the lock in
      * warning or exception output.
      *
      * @throws IllegalStateException If the factory has already created a {@code Lock} with the
@@ -424,8 +420,8 @@ public class CycleDetectingLockFactory {
     }
 
     /**
-     * Creates a {@link ReentrantReadWriteLock} with the given fairness policy and rank. The values
-     * returned by {@link Enum#getDeclaringClass()} and {@link Enum#name()} are used to describe the
+     * Creates a {@code ReentrantReadWriteLock} with the given fairness policy and rank. The values
+     * returned by {@code Enum#getDeclaringClass()} and {@code Enum#name()} are used to describe the
      * lock in warning or exception output.
      *
      * @throws IllegalStateException If the factory has already created a {@code Lock} with the
@@ -452,8 +448,8 @@ public class CycleDetectingLockFactory {
   }
 
   /**
-   * Tracks the currently acquired locks for each Thread, kept up to date by calls to {@link
-   * #aboutToAcquire(CycleDetectingLock)} and {@link #lockStateChanged(CycleDetectingLock)}.
+   * Tracks the currently acquired locks for each Thread, kept up to date by calls to {@code
+   * #aboutToAcquire(CycleDetectingLock)} and {@code #lockStateChanged(CycleDetectingLock)}.
    */
   // This is logically a Set, but an ArrayList is used to minimize the amount
   // of allocation done on lock()/unlock().
@@ -561,7 +557,7 @@ public class CycleDetectingLockFactory {
    */
   private interface CycleDetectingLock {
 
-    /** @return the {@link LockGraphNode} associated with this lock. */
+    /** @return the {@code LockGraphNode} associated with this lock. */
     LockGraphNode getLockGraphNode();
 
     /** @return {@code true} if the current thread has acquired this lock. */
@@ -672,7 +668,7 @@ public class CycleDetectingLockFactory {
      * Performs a depth-first traversal of the graph edges defined by each node's {@code
      * allowedPriorLocks} to find a path between {@code this} and the specified {@code lock}.
      *
-     * @return If a path was found, a chained {@link ExampleStackTrace} illustrating the path to the
+     * @return If a path was found, a chained {@code ExampleStackTrace} illustrating the path to the
      *     {@code lock}, or {@code null} if no path was found.
      */
     @CheckForNull

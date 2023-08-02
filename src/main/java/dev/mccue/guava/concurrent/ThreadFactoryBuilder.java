@@ -30,15 +30,15 @@ import dev.mccue.jsr305.CheckForNull;
  * A ThreadFactory builder, providing any combination of these features:
  *
  * <ul>
- *   <li>whether threads should be marked as {@linkplain Thread#setDaemon daemon} threads
- *   <li>a {@linkplain ThreadFactoryBuilder#setNameFormat naming format}
- *   <li>a {@linkplain Thread#setPriority thread priority}
- *   <li>an {@linkplain Thread#setUncaughtExceptionHandler uncaught exception handler}
- *   <li>a {@linkplain ThreadFactory#newThread backing thread factory}
+ *   <li>whether threads should be marked as {@code Thread#setDaemon daemon} threads
+ *   <li>a {@code ThreadFactoryBuilder#setNameFormat naming format}
+ *   <li>a {@code Thread#setPriority thread priority}
+ *   <li>an {@code Thread#setUncaughtExceptionHandler uncaught exception handler}
+ *   <li>a {@code ThreadFactory#newThread backing thread factory}
  * </ul>
  *
  * <p>If no backing thread factory is provided, a default backing thread factory is used as if by
- * calling {@code setThreadFactory(}{@link Executors#defaultThreadFactory()}{@code )}.
+ * calling {@code setThreadFactory(}{@code Executors#defaultThreadFactory()}{@code )}.
  *
  * @author Kurt Alfred Kluever
  * @since 4.0
@@ -51,14 +51,14 @@ public final class ThreadFactoryBuilder {
   @CheckForNull private UncaughtExceptionHandler uncaughtExceptionHandler = null;
   @CheckForNull private ThreadFactory backingThreadFactory = null;
 
-  /** Creates a new {@link ThreadFactory} builder. */
+  /** Creates a new {@code ThreadFactory} builder. */
   public ThreadFactoryBuilder() {}
 
   /**
-   * Sets the naming format to use when naming threads ({@link Thread#setName}) which are created
+   * Sets the naming format to use when naming threads ({@code Thread#setName}) which are created
    * with this ThreadFactory.
    *
-   * @param nameFormat a {@link String#format(String, Object...)}-compatible format String, to which
+   * @param nameFormat a {@code String#format(String, Object...)}-compatible format String, to which
    *     a unique integer (0, 1, etc.) will be supplied as the single parameter. This integer will
    *     be unique to the built instance of the ThreadFactory and will be assigned sequentially. For
    *     example, {@code "rpc-pool-%d"} will generate thread names like {@code "rpc-pool-0"}, {@code
@@ -112,7 +112,7 @@ public final class ThreadFactoryBuilder {
   }
 
   /**
-   * Sets the {@link UncaughtExceptionHandler} for new threads created with this ThreadFactory.
+   * Sets the {@code UncaughtExceptionHandler} for new threads created with this ThreadFactory.
    *
    * @param uncaughtExceptionHandler the uncaught exception handler for new Threads created with
    *     this ThreadFactory
@@ -126,10 +126,10 @@ public final class ThreadFactoryBuilder {
   }
 
   /**
-   * Sets the backing {@link ThreadFactory} for new threads created with this ThreadFactory. Threads
-   * will be created by invoking #newThread(Runnable) on this backing {@link ThreadFactory}.
+   * Sets the backing {@code ThreadFactory} for new threads created with this ThreadFactory. Threads
+   * will be created by invoking #newThread(Runnable) on this backing {@code ThreadFactory}.
    *
-   * @param backingThreadFactory the backing {@link ThreadFactory} which will be delegated to during
+   * @param backingThreadFactory the backing {@code ThreadFactory} which will be delegated to during
    *     thread creation.
    * @return this for the builder pattern
    * @see MoreExecutors
@@ -145,7 +145,7 @@ public final class ThreadFactoryBuilder {
    * building, it is still possible to change the options used to build the ThreadFactory and/or
    * build again. State is not shared amongst built instances.
    *
-   * @return the fully constructed {@link ThreadFactory}
+   * @return the fully constructed {@code ThreadFactory}
    */
   public ThreadFactory build() {
     return doBuild(this);

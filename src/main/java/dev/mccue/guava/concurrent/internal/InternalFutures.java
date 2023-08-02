@@ -16,7 +16,7 @@ package dev.mccue.guava.concurrent.internal;
 
 
 /**
- * Static utilities for {@link InternalFutureFailureAccess}. Most users will never need to use this
+ * Static utilities for {@code InternalFutureFailureAccess}. Most users will never need to use this
  * class.
  *
  * <p>This class is GWT-compatible.

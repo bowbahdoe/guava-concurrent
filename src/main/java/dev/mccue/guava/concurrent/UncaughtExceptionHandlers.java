@@ -16,13 +16,12 @@ package dev.mccue.guava.concurrent;
 
 import static java.lang.System.Logger.Level.ERROR;
 
-
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Locale;
 import java.lang.System.Logger;
 
 /**
- * Factories for {@link UncaughtExceptionHandler} instances.
+ * Factories for {@code UncaughtExceptionHandler} instances.
  *
  * @author Gregory Kick
  * @since 8.0
@@ -51,7 +50,6 @@ public final class UncaughtExceptionHandlers {
     return new Exiter(Runtime.getRuntime());
   }
 
-  @VisibleForTesting
   static final class Exiter implements UncaughtExceptionHandler {
     private static final Logger logger = System.getLogger(Exiter.class.getName());
 

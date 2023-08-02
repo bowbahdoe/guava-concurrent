@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Utilities necessary for working with libraries that supply plain {@link Future} instances. Note
+ * Utilities necessary for working with libraries that supply plain {@code Future} instances. Note
  * that, whenever possible, it is strongly preferred to modify those libraries to return {@code
  * ListenableFuture} directly.
  *
@@ -39,16 +39,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @ElementTypesAreNonnullByDefault
 public final class JdkFutureAdapters {
   /**
-   * Assigns a thread to the given {@link Future} to provide {@link ListenableFuture} functionality.
+   * Assigns a thread to the given {@code Future} to provide {@code ListenableFuture} functionality.
    *
    * <p><b>Warning:</b> If the input future does not already implement {@code ListenableFuture}, the
-   * returned future will emulate {@link ListenableFuture#addListener} by taking a thread from an
+   * returned future will emulate {@code ListenableFuture#addListener} by taking a thread from an
    * internal, unbounded pool at the first call to {@code addListener} and holding it until the
-   * future is {@linkplain Future#isDone() done}.
+   * future is {@code Future#isDone() done}.
    *
-   * <p>Prefer to create {@code ListenableFuture} instances with {@link SettableFuture}, {@link
-   * MoreExecutors#listeningDecorator( java.util.concurrent.ExecutorService)}, {@link
-   * ListenableFutureTask}, {@link AbstractFuture}, and other utilities over creating plain {@code
+   * <p>Prefer to create {@code ListenableFuture} instances with {@code SettableFuture}, {@code
+   * MoreExecutors#listeningDecorator( java.util.concurrent.ExecutorService)}, {@code
+   * ListenableFutureTask}, {@code AbstractFuture}, and other utilities over creating plain {@code
    * Future} instances to be upgraded to {@code ListenableFuture} after the fact.
    */
   public static <V extends @Nullable Object> ListenableFuture<V> listenInPoolThread(
@@ -60,21 +60,21 @@ public final class JdkFutureAdapters {
   }
 
   /**
-   * Submits a blocking task for the given {@link Future} to provide {@link ListenableFuture}
+   * Submits a blocking task for the given {@code Future} to provide {@code ListenableFuture}
    * functionality.
    *
    * <p><b>Warning:</b> If the input future does not already implement {@code ListenableFuture}, the
-   * returned future will emulate {@link ListenableFuture#addListener} by submitting a task to the
+   * returned future will emulate {@code ListenableFuture#addListener} by submitting a task to the
    * given executor at the first call to {@code addListener}. The task must be started by the
    * executor promptly, or else the returned {@code ListenableFuture} may fail to work. The task's
-   * execution consists of blocking until the input future is {@linkplain Future#isDone() done}, so
+   * execution consists of blocking until the input future is {@code Future#isDone() done}, so
    * each call to this method may claim and hold a thread for an arbitrary length of time. Use of
    * bounded executors or other executors that may fail to execute a task promptly may result in
    * deadlocks.
    *
-   * <p>Prefer to create {@code ListenableFuture} instances with {@link SettableFuture}, {@link
-   * MoreExecutors#listeningDecorator( java.util.concurrent.ExecutorService)}, {@link
-   * ListenableFutureTask}, {@link AbstractFuture}, and other utilities over creating plain {@code
+   * <p>Prefer to create {@code ListenableFuture} instances with {@code SettableFuture}, {@code
+   * MoreExecutors#listeningDecorator( java.util.concurrent.ExecutorService)}, {@code
+   * ListenableFutureTask}, {@code AbstractFuture}, and other utilities over creating plain {@code
    * Future} instances to be upgraded to {@code ListenableFuture} after the fact.
    *
    * @since 12.0
@@ -89,7 +89,7 @@ public final class JdkFutureAdapters {
   }
 
   /**
-   * An adapter to turn a {@link Future} into a {@link ListenableFuture}. This will wait on the
+   * An adapter to turn a {@code Future} into a {@code ListenableFuture}. This will wait on the
    * future to finish, and when it completes, run the listeners. This implementation will wait on
    * the source future indefinitely, so if the source future never completes, the adapter will never
    * complete either.

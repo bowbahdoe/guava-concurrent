@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Helper interface to implement both {@link ListenableFuture} and {@link ScheduledFuture}.
+ * Helper interface to implement both {@code ListenableFuture} and {@code ScheduledFuture}.
  *
  * @author Anthony Zana
  * @since 15.0

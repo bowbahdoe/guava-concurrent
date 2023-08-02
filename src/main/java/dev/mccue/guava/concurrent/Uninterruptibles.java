@@ -42,13 +42,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @author Anthony Zana
  * @since 10.0
  */
+
 @ElementTypesAreNonnullByDefault
 public final class Uninterruptibles {
 
   // Implementation Note: As of 3-7-11, the logic for each blocking/timeout
   // methods is identical, save for method being invoked.
 
-  /** Invokes {@code latch.}{@link CountDownLatch#await() await()} uninterruptibly. */
+  /** Invokes {@code latch.}{@code CountDownLatch#await() await()} uninterruptibly. */
   // concurrency
   public static void awaitUninterruptibly(CountDownLatch latch) {
     boolean interrupted = false;
@@ -69,7 +70,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code latch.}{@link CountDownLatch#await(long, TimeUnit) await(timeout, unit)}
+   * Invokes {@code latch.}{@code CountDownLatch#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    *
    * @since 28.0
@@ -80,7 +81,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code latch.}{@link CountDownLatch#await(long, TimeUnit) await(timeout, unit)}
+   * Invokes {@code latch.}{@code CountDownLatch#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    */
   // concurrency
@@ -108,7 +109,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code condition.}{@link Condition#await(long, TimeUnit) await(timeout, unit)}
+   * Invokes {@code condition.}{@code Condition#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    *
    * @since 28.0
@@ -119,7 +120,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code condition.}{@link Condition#await(long, TimeUnit) await(timeout, unit)}
+   * Invokes {@code condition.}{@code Condition#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    *
    * @since 23.6
@@ -147,7 +148,7 @@ public final class Uninterruptibles {
     }
   }
 
-  /** Invokes {@code toJoin.}{@link Thread#join() join()} uninterruptibly. */
+  /** Invokes {@code toJoin.}{@code Thread#join() join()} uninterruptibly. */
   // concurrency
   public static void joinUninterruptibly(Thread toJoin) {
     boolean interrupted = false;
@@ -168,7 +169,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code unit.}{@link TimeUnit#timedJoin(Thread, long) timedJoin(toJoin, timeout)}
+   * Invokes {@code unit.}{@code TimeUnit#timedJoin(Thread, long) timedJoin(toJoin, timeout)}
    * uninterruptibly.
    *
    * @since 28.0
@@ -179,7 +180,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code unit.}{@link TimeUnit#timedJoin(Thread, long) timedJoin(toJoin, timeout)}
+   * Invokes {@code unit.}{@code TimeUnit#timedJoin(Thread, long) timedJoin(toJoin, timeout)}
    * uninterruptibly.
    */
   // concurrency
@@ -208,16 +209,16 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code future.}{@link Future#get() get()} uninterruptibly.
+   * Invokes {@code future.}{@code Future#get() get()} uninterruptibly.
    *
    * <p>Similar methods:
    *
    * <ul>
-   *   <li>To retrieve a result from a {@code Future} that is already done, use {@link
+   *   <li>To retrieve a result from a {@code Future} that is already done, use {@code
    *       Futures#getDone Futures.getDone}.
-   *   <li>To treat {@link InterruptedException} uniformly with other exceptions, use {@link
+   *   <li>To treat {@code InterruptedException} uniformly with other exceptions, use {@code
    *       Futures#getChecked(Future, Class) Futures.getChecked}.
-   *   <li>To get uninterruptibility and remove checked exceptions, use {@link
+   *   <li>To get uninterruptibility and remove checked exceptions, use {@code
    *       Futures#getUnchecked}.
    * </ul>
    *
@@ -245,16 +246,16 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code future.}{@link Future#get(long, TimeUnit) get(timeout, unit)} uninterruptibly.
+   * Invokes {@code future.}{@code Future#get(long, TimeUnit) get(timeout, unit)} uninterruptibly.
    *
    * <p>Similar methods:
    *
    * <ul>
-   *   <li>To retrieve a result from a {@code Future} that is already done, use {@link
+   *   <li>To retrieve a result from a {@code Future} that is already done, use {@code
    *       Futures#getDone Futures.getDone}.
-   *   <li>To treat {@link InterruptedException} uniformly with other exceptions, use {@link
+   *   <li>To treat {@code InterruptedException} uniformly with other exceptions, use {@code
    *       Futures#getChecked(Future, Class, long, TimeUnit) Futures.getChecked}.
-   *   <li>To get uninterruptibility and remove checked exceptions, use {@link
+   *   <li>To get uninterruptibility and remove checked exceptions, use {@code
    *       Futures#getUnchecked}.
    * </ul>
    *
@@ -272,16 +273,16 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code future.}{@link Future#get(long, TimeUnit) get(timeout, unit)} uninterruptibly.
+   * Invokes {@code future.}{@code Future#get(long, TimeUnit) get(timeout, unit)} uninterruptibly.
    *
    * <p>Similar methods:
    *
    * <ul>
-   *   <li>To retrieve a result from a {@code Future} that is already done, use {@link
+   *   <li>To retrieve a result from a {@code Future} that is already done, use {@code
    *       Futures#getDone Futures.getDone}.
-   *   <li>To treat {@link InterruptedException} uniformly with other exceptions, use {@link
+   *   <li>To treat {@code InterruptedException} uniformly with other exceptions, use {@code
    *       Futures#getChecked(Future, Class, long, TimeUnit) Futures.getChecked}.
-   *   <li>To get uninterruptibility and remove checked exceptions, use {@link
+   *   <li>To get uninterruptibility and remove checked exceptions, use {@code
    *       Futures#getUnchecked}.
    * </ul>
    *
@@ -316,7 +317,7 @@ public final class Uninterruptibles {
     }
   }
 
-  /** Invokes {@code queue.}{@link BlockingQueue#take() take()} uninterruptibly. */
+  /** Invokes {@code queue.}{@code BlockingQueue#take() take()} uninterruptibly. */
   // concurrency
   public static <E> E takeUninterruptibly(BlockingQueue<E> queue) {
     boolean interrupted = false;
@@ -336,7 +337,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code queue.}{@link BlockingQueue#put(Object) put(element)} uninterruptibly.
+   * Invokes {@code queue.}{@code BlockingQueue#put(Object) put(element)} uninterruptibly.
    *
    * @throws ClassCastException if the class of the specified element prevents it from being added
    *     to the given queue
@@ -364,7 +365,7 @@ public final class Uninterruptibles {
 
   // TODO(user): Support Sleeper somehow (wrapper or interface method)?
   /**
-   * Invokes {@code unit.}{@link TimeUnit#sleep(long) sleep(sleepFor)} uninterruptibly.
+   * Invokes {@code unit.}{@code TimeUnit#sleep(long) sleep(sleepFor)} uninterruptibly.
    *
    * @since 28.0
    */
@@ -374,7 +375,7 @@ public final class Uninterruptibles {
   }
 
   // TODO(user): Support Sleeper somehow (wrapper or interface method)?
-  /** Invokes {@code unit.}{@link TimeUnit#sleep(long) sleep(sleepFor)} uninterruptibly. */
+  /** Invokes {@code unit.}{@code TimeUnit#sleep(long) sleep(sleepFor)} uninterruptibly. */
   // concurrency
   @SuppressWarnings("GoodTime") // should accept a java.time.Duration
   public static void sleepUninterruptibly(long sleepFor, TimeUnit unit) {
@@ -400,7 +401,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code semaphore.}{@link Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(1,
+   * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(1,
    * timeout, unit)} uninterruptibly.
    *
    * @since 28.0
@@ -411,7 +412,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code semaphore.}{@link Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(1,
+   * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(1,
    * timeout, unit)} uninterruptibly.
    *
    * @since 18.0
@@ -424,7 +425,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code semaphore.}{@link Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(permits,
+   * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(permits,
    * timeout, unit)} uninterruptibly.
    *
    * @since 28.0
@@ -437,7 +438,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code semaphore.}{@link Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(permits,
+   * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(permits,
    * timeout, unit)} uninterruptibly.
    *
    * @since 18.0
@@ -468,7 +469,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code lock.}{@link Lock#tryLock(long, TimeUnit) tryLock(timeout, unit)}
+   * Invokes {@code lock.}{@code Lock#tryLock(long, TimeUnit) tryLock(timeout, unit)}
    * uninterruptibly.
    *
    * @since 30.0
@@ -479,7 +480,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code lock.}{@link Lock#tryLock(long, TimeUnit) tryLock(timeout, unit)}
+   * Invokes {@code lock.}{@code Lock#tryLock(long, TimeUnit) tryLock(timeout, unit)}
    * uninterruptibly.
    *
    * @since 30.0
@@ -508,7 +509,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code executor.}{@link ExecutorService#awaitTermination(long, TimeUnit)
+   * Invokes {@code executor.}{@code ExecutorService#awaitTermination(long, TimeUnit)
    * awaitTermination(long, TimeUnit)} uninterruptibly with no timeout.
    *
    * @since 30.0
@@ -520,7 +521,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code executor.}{@link ExecutorService#awaitTermination(long, TimeUnit)
+   * Invokes {@code executor.}{@code ExecutorService#awaitTermination(long, TimeUnit)
    * awaitTermination(long, TimeUnit)} uninterruptibly.
    *
    * @since 30.0
@@ -532,7 +533,7 @@ public final class Uninterruptibles {
   }
 
   /**
-   * Invokes {@code executor.}{@link ExecutorService#awaitTermination(long, TimeUnit)
+   * Invokes {@code executor.}{@code ExecutorService#awaitTermination(long, TimeUnit)
    * awaitTermination(long, TimeUnit)} uninterruptibly.
    *
    * @since 30.0

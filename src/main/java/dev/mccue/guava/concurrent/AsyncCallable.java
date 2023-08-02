@@ -18,10 +18,10 @@ import java.util.concurrent.Future;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Computes a value, possibly asynchronously. For an example usage and more information, see {@link
+ * Computes a value, possibly asynchronously. For an example usage and more information, see {@code
  * Futures.FutureCombiner#callAsync(AsyncCallable, java.util.concurrent.Executor)}.
  *
- * <p>Much like {@link java.util.concurrent.Callable}, but returning a {@link ListenableFuture}
+ * <p>Much like {@code java.util.concurrent.Callable}, but returning a {@code ListenableFuture}
  * result.
  *
  * @since 20.0
@@ -30,10 +30,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @ElementTypesAreNonnullByDefault
 public interface AsyncCallable<V extends @Nullable Object> {
   /**
-   * Computes a result {@code Future}. The output {@code Future} need not be {@linkplain
+   * Computes a result {@code Future}. The output {@code Future} need not be {@code
    * Future#isDone done}, making {@code AsyncCallable} suitable for asynchronous derivations.
    *
-   * <p>Throwing an exception from this method is equivalent to returning a failing {@link
+   * <p>Throwing an exception from this method is equivalent to returning a failing {@code
    * ListenableFuture}.
    */
   ListenableFuture<V> call() throws Exception;

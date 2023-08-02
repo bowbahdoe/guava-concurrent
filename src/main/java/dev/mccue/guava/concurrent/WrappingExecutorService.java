@@ -32,12 +32,12 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * An abstract {@code ExecutorService} that allows subclasses to {@linkplain #wrapTask(Callable)
+ * An abstract {@code ExecutorService} that allows subclasses to {@code #wrapTask(Callable)
  * wrap} tasks before they are submitted to the underlying executor.
  *
  * <p>Note that task wrapping may occur even if the task is never executed.
  *
- * <p>For delegation without task-wrapping, see {@link ForwardingExecutorService}.
+ * <p>For delegation without task-wrapping, see {@code ForwardingExecutorService}.
  *
  * @author Chris Nokleberg
  */
@@ -51,13 +51,13 @@ abstract class WrappingExecutorService implements ExecutorService {
 
   /**
    * Wraps a {@code Callable} for submission to the underlying executor. This method is also applied
-   * to any {@code Runnable} passed to the default implementation of {@link #wrapTask(Runnable)}.
+   * to any {@code Runnable} passed to the default implementation of {@code #wrapTask(Runnable)}.
    */
   protected abstract <T extends @Nullable Object> Callable<T> wrapTask(Callable<T> callable);
 
   /**
    * Wraps a {@code Runnable} for submission to the underlying executor. The default implementation
-   * delegates to {@link #wrapTask(Callable)}.
+   * delegates to {@code #wrapTask(Callable)}.
    */
   protected Runnable wrapTask(Runnable command) {
     Callable<Object> wrapped = wrapTask(Executors.callable(command, null));

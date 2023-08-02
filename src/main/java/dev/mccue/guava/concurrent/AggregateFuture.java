@@ -45,10 +45,10 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
   private static final Logger logger = System.getLogger(AggregateFuture.class.getName());
 
   /**
-   * The input futures. After {@link #init}, this field is read only by {@link #afterDone()} (to
-   * propagate cancellation) and {@link #toString()}. To access the futures' <i>values</i>, {@code
+   * The input futures. After {@code #init}, this field is read only by {@code #afterDone()} (to
+   * propagate cancellation) and {@code #toString()}. To access the futures' <i>values</i>, {@code
    * AggregateFuture} attaches listeners that hold references to one or more inputs. And in the case
-   * of {@link CombinedFuture}, the user-supplied callback usually has its own references to inputs.
+   * of {@code CombinedFuture}, the user-supplied callback usually has its own references to inputs.
    */
   /*
    * In certain circumstances, this field might theoretically not be visible to an afterDone() call
@@ -74,7 +74,7 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
     super.afterDone();
 
     ImmutableCollection<? extends Future<?>> localFutures = futures;
-    releaseResources(ReleaseResourcesReason.OUTPUT_FUTURE_DONE); // nulls out `futures`
+    releaseResources(OUTPUT_FUTURE_DONE); // nulls out `futures`
 
     if (isCancelled() & localFutures != null) {
       boolean wasInterrupted = wasInterrupted();
@@ -101,7 +101,7 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
   /**
    * Must be called at the end of each subclass's constructor. This method performs the "real"
    * initialization; we can't put this in the constructor because, in the case where futures are
-   * already complete, we would not initialize the subclass before calling {@link
+   * already complete, we would not initialize the subclass before calling {@code
    * #collectValueFromNonCancelledFuture}. As this is called after the subclass is constructed,
    * we're guaranteed to have properly initialized the subclass.
    */
@@ -184,8 +184,8 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
   }
 
   /**
-   * Fails this future with the given Throwable if {@link #allMustSucceed} is true. Also, logs the
-   * throwable if it is an {@link Error} or if {@link #allMustSucceed} is {@code true}, the
+   * Fails this future with the given Throwable if {@code #allMustSucceed} is true. Also, logs the
+   * throwable if it is an {@code Error} or if {@code #allMustSucceed} is {@code true}, the
    * throwable did not cause this future to fail, and it is the first time we've seen that
    * particular Throwable.
    */
@@ -258,7 +258,7 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
 
   /**
    * Collects the result (success or failure) of one input future. The input must not have been
-   * cancelled. For details on when this is called, see {@link #collectOneValue}.
+   * cancelled. For details on when this is called, see {@code #collectOneValue}.
    */
   private void collectValueFromNonCancelledFuture(int index, Future<? extends InputT> future) {
     try {
@@ -304,12 +304,12 @@ abstract class AggregateFuture<InputT extends @Nullable Object, OutputT extends 
      * whenAll*().call*(), this future may be pending until the callback runs -- or even longer in
      * the case of callAsync(), which waits for the callback's returned future to complete.
      */
-    releaseResources(ReleaseResourcesReason.ALL_INPUT_FUTURES_PROCESSED);
+    releaseResources(ALL_INPUT_FUTURES_PROCESSED);
   }
 
   /**
    * Clears fields that are no longer needed after this future has completed -- or at least all its
-   * inputs have completed (more precisely, after {@link #handleAllCompleted()} has been called).
+   * inputs have completed (more precisely, after {@code #handleAllCompleted()} has been called).
    * Often called multiple times (that is, both when the inputs complete and when the output
    * completes).
    *

@@ -27,10 +27,10 @@ import static dev.mccue.guava.concurrent.Service.State.TERMINATED;
 import static java.util.Objects.requireNonNull;
 
 import dev.mccue.guava.concurrent.Monitor.Guard;
+import dev.mccue.guava.concurrent.Service.State; // javadoc needs this
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
-
 import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +38,9 @@ import java.util.concurrent.TimeoutException;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
- * Base class for implementing services that can handle {@link #doStart} and {@link #doStop}
- * requests, responding to them with {@link #notifyStarted()} and {@link #notifyStopped()}
- * callbacks. Its subclasses must manage threads manually; consider {@link
+ * Base class for implementing services that can handle {@code #doStart} and {@code #doStop}
+ * requests, responding to them with {@code #notifyStarted()} and {@code #notifyStopped()}
+ * callbacks. Its subclasses must manage threads manually; consider {@code
  * AbstractExecutionThreadService} if you need only a single execution thread.
  *
  * @author Jesse Wilson
@@ -175,7 +175,7 @@ public abstract class AbstractService implements Service {
   /**
    * The current state of the service. This should be written with the lock held but can be read
    * without it because it is an immutable object in a volatile field. This is desirable so that
-   * methods like {@link #state}, {@link #failureCause} and notably {@link #toString} can be run
+   * methods like {@code #state}, {@code #failureCause} and notably {@code #toString} can be run
    * without grabbing the lock.
    *
    * <p>To update this field correctly the lock must be held to guarantee that the state is
@@ -187,13 +187,13 @@ public abstract class AbstractService implements Service {
   protected AbstractService() {}
 
   /**
-   * This method is called by {@link #startAsync} to initiate service startup. The invocation of
-   * this method should cause a call to {@link #notifyStarted()}, either during this method's run,
-   * or after it has returned. If startup fails, the invocation should cause a call to {@link
+   * This method is called by {@code #startAsync} to initiate service startup. The invocation of
+   * this method should cause a call to {@code #notifyStarted()}, either during this method's run,
+   * or after it has returned. If startup fails, the invocation should cause a call to {@code
    * #notifyFailed(Throwable)} instead.
    *
    * <p>This method should return promptly; prefer to do work on a different thread where it is
-   * convenient. It is invoked exactly once on service startup, even when {@link #startAsync} is
+   * convenient. It is invoked exactly once on service startup, even when {@code #startAsync} is
    * called multiple times.
    */
   @ForOverride
@@ -201,32 +201,32 @@ public abstract class AbstractService implements Service {
 
   /**
    * This method should be used to initiate service shutdown. The invocation of this method should
-   * cause a call to {@link #notifyStopped()}, either during this method's run, or after it has
-   * returned. If shutdown fails, the invocation should cause a call to {@link
+   * cause a call to {@code #notifyStopped()}, either during this method's run, or after it has
+   * returned. If shutdown fails, the invocation should cause a call to {@code
    * #notifyFailed(Throwable)} instead.
    *
    * <p>This method should return promptly; prefer to do work on a different thread where it is
-   * convenient. It is invoked exactly once on service shutdown, even when {@link #stopAsync} is
+   * convenient. It is invoked exactly once on service shutdown, even when {@code #stopAsync} is
    * called multiple times.
    *
-   * <p>If {@link #stopAsync} is called on a {@link State#STARTING} service, this method is not
-   * invoked immediately. Instead, it will be deferred until after the service is {@link
-   * State#RUNNING}. Services that need to cancel startup work can override {@link #doCancelStart}.
+   * <p>If {@code #stopAsync} is called on a {@code State#STARTING} service, this method is not
+   * invoked immediately. Instead, it will be deferred until after the service is {@code
+   * State#RUNNING}. Services that need to cancel startup work can override {@code #doCancelStart}.
    */
   @ForOverride
   protected abstract void doStop();
 
   /**
-   * This method is called by {@link #stopAsync} when the service is still starting (i.e. {@link
-   * #startAsync} has been called but {@link #notifyStarted} has not). Subclasses can override the
-   * method to cancel pending work and then call {@link #notifyStopped} to stop the service.
+   * This method is called by {@code #stopAsync} when the service is still starting (i.e. {@code
+   * #startAsync} has been called but {@code #notifyStarted} has not). Subclasses can override the
+   * method to cancel pending work and then call {@code #notifyStopped} to stop the service.
    *
    * <p>This method should return promptly; prefer to do work on a different thread where it is
-   * convenient. It is invoked exactly once on service shutdown, even when {@link #stopAsync} is
+   * convenient. It is invoked exactly once on service shutdown, even when {@code #stopAsync} is
    * called multiple times.
    *
-   * <p>When this method is called {@link #state()} will return {@link State#STOPPING}, which is the
-   * external state observable by the caller of {@link #stopAsync}.
+   * <p>When this method is called {@code #state()} will return {@code State#STOPPING}, which is the
+   * external state observable by the caller of {@code #stopAsync}.
    *
    * @since 27.0
    */
@@ -381,9 +381,9 @@ public abstract class AbstractService implements Service {
 
   /**
    * Implementing classes should invoke this method once their service has started. It will cause
-   * the service to transition from {@link State#STARTING} to {@link State#RUNNING}.
+   * the service to transition from {@code State#STARTING} to {@code State#RUNNING}.
    *
-   * @throws IllegalStateException if the service is not {@link State#STARTING}.
+   * @throws IllegalStateException if the service is not {@code State#STARTING}.
    */
   protected final void notifyStarted() {
     monitor.enter();
@@ -415,11 +415,11 @@ public abstract class AbstractService implements Service {
 
   /**
    * Implementing classes should invoke this method once their service has stopped. It will cause
-   * the service to transition from {@link State#STARTING} or {@link State#STOPPING} to {@link
+   * the service to transition from {@code State#STARTING} or {@code State#STOPPING} to {@code
    * State#TERMINATED}.
    *
-   * @throws IllegalStateException if the service is not one of {@link State#STOPPING}, {@link
-   *     State#STARTING}, or {@link State#RUNNING}.
+   * @throws IllegalStateException if the service is not one of {@code State#STOPPING}, {@code
+   *     State#STARTING}, or {@code State#RUNNING}.
    */
   protected final void notifyStopped() {
     monitor.enter();
@@ -444,7 +444,7 @@ public abstract class AbstractService implements Service {
   }
 
   /**
-   * Invoke this method to transition the service to the {@link State#FAILED}. The service will
+   * Invoke this method to transition the service to the {@code State#FAILED}. The service will
    * <b>not be stopped</b> if it is running. Invoke this method when a service has failed critically
    * or otherwise cannot be started nor stopped.
    */
@@ -502,7 +502,7 @@ public abstract class AbstractService implements Service {
   }
 
   /**
-   * Attempts to execute all the listeners in {@link #listeners} while not holding the {@link
+   * Attempts to execute all the listeners in {@code #listeners} while not holding the {@code
    * #monitor}.
    */
   private void dispatchListenerEvents() {

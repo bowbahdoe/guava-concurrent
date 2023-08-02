@@ -23,13 +23,13 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * {@link FluentFuture} that forwards all calls to a delegate.
+ * {@code FluentFuture} that forwards all calls to a delegate.
  *
  * <h3>Extension</h3>
  *
  * If you want a class like {@code FluentFuture} but with extra methods, we recommend declaring your
- * own subclass of {@link ListenableFuture}, complete with a method like {@link #from} to adapt an
- * existing {@code ListenableFuture}, implemented atop a {@link ForwardingListenableFuture} that
+ * own subclass of {@code ListenableFuture}, complete with a method like {@code #from} to adapt an
+ * existing {@code ListenableFuture}, implemented atop a {@code ForwardingListenableFuture} that
  * forwards to that future and adds the desired methods.
  */
 @ElementTypesAreNonnullByDefault

@@ -36,6 +36,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *   <li>Decrements a counter atomically
  * </ul>
  */
+
+
 @ElementTypesAreNonnullByDefault
 abstract class AggregateFutureState<OutputT extends @Nullable Object>
     extends AbstractFuture.TrustedFuture<OutputT> {
@@ -146,11 +148,11 @@ abstract class AggregateFutureState<OutputT extends @Nullable Object>
   }
 
   private abstract static class AtomicHelper {
-    /** Atomic compare-and-set of the {@link AggregateFutureState#seenExceptions} field. */
+    /** Atomic compare-and-set of the {@code AggregateFutureState#seenExceptions} field. */
     abstract void compareAndSetSeenExceptions(
         AggregateFutureState<?> state, @CheckForNull Set<Throwable> expect, Set<Throwable> update);
 
-    /** Atomic decrement-and-get of the {@link AggregateFutureState#remaining} field. */
+    /** Atomic decrement-and-get of the {@code AggregateFutureState#remaining} field. */
     abstract int decrementAndGetRemainingCount(AggregateFutureState<?> state);
   }
 

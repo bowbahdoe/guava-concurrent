@@ -19,7 +19,6 @@ import static dev.mccue.guava.base.Preconditions.checkNotNull;
 import static dev.mccue.guava.concurrent.Internal.toNanosSaturated;
 import static java.util.Objects.requireNonNull;
 
-
 import dev.mccue.guava.base.Supplier;
 import dev.mccue.guava.base.Throwables;
 import dev.mccue.guava.collect.Lists;
@@ -52,14 +51,15 @@ import java.util.concurrent.TimeoutException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Factory and utility methods for {@link Executor}, {@link ExecutorService},
- * and {@link ThreadFactory}.
+ * Factory and utility methods for {@code java.util.concurrent.Executor}, {@code ExecutorService},
+ * and {@code java.util.concurrent.ThreadFactory}.
  *
  * @author Eric Fellheimer
  * @author Kyle Littlefield
  * @author Justin Mahoney
  * @since 3.0
  */
+
 @ElementTypesAreNonnullByDefault
 public final class MoreExecutors {
   private MoreExecutors() {}
@@ -69,7 +69,7 @@ public final class MoreExecutors {
    * is complete. It does so by using daemon threads and adding a shutdown hook to wait for their
    * completion.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newFixedThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newFixedThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @param terminationTimeout how long to wait for the executor to finish before terminating the
@@ -89,7 +89,7 @@ public final class MoreExecutors {
    * is complete. It does so by using daemon threads and adding a shutdown hook to wait for their
    * completion.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newFixedThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newFixedThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @param terminationTimeout how long to wait for the executor to finish before terminating the
@@ -112,7 +112,7 @@ public final class MoreExecutors {
    * <p>This method waits 120 seconds before continuing with JVM termination, even if the executor
    * has not finished its work.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newFixedThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newFixedThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @return an unmodifiable version of the input which will not hang the JVM
@@ -127,7 +127,7 @@ public final class MoreExecutors {
    * the application is complete. It does so by using daemon threads and adding a shutdown hook to
    * wait for their completion.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newScheduledThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newScheduledThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @param terminationTimeout how long to wait for the executor to finish before terminating the
@@ -147,7 +147,7 @@ public final class MoreExecutors {
    * the application is complete. It does so by using daemon threads and adding a shutdown hook to
    * wait for their completion.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newScheduledThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newScheduledThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @param terminationTimeout how long to wait for the executor to finish before terminating the
@@ -171,7 +171,7 @@ public final class MoreExecutors {
    * <p>This method waits 120 seconds before continuing with JVM termination, even if the executor
    * has not finished its work.
    *
-   * <p>This is mainly for fixed thread pools. See {@link Executors#newScheduledThreadPool(int)}.
+   * <p>This is mainly for fixed thread pools. See {@code Executors#newScheduledThreadPool(int)}.
    *
    * @param executor the executor to modify to make sure it exits when the application is finished
    * @return an unmodifiable version of the input which will not hang the JVM
@@ -183,7 +183,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * Add a shutdown hook to wait for thread completion in the given {@link ExecutorService service}.
+   * Add a shutdown hook to wait for thread completion in the given {@code ExecutorService service}.
    * This is useful if the given service uses daemon threads, and we want to keep the JVM from
    * exiting immediately on shutdown, instead giving these daemon threads a chance to terminate
    * normally.
@@ -199,7 +199,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * Add a shutdown hook to wait for thread completion in the given {@link ExecutorService service}.
+   * Add a shutdown hook to wait for thread completion in the given {@code ExecutorService service}.
    * This is useful if the given service uses daemon threads, and we want to keep the JVM from
    * exiting immediately on shutdown, instead giving these daemon threads a chance to terminate
    * normally.
@@ -218,7 +218,6 @@ public final class MoreExecutors {
 
   /** Represents the current application to register shutdown hooks. */
   // TODO
-  @VisibleForTesting
   static class Application {
 
     final ExecutorService getExitingExecutorService(
@@ -261,7 +260,7 @@ public final class MoreExecutors {
                     // following code, but unfortunately the behavior of logging
                     // is undefined in shutdown hooks.
                     // This is because the logging code installs a shutdown hook of its
-                    // own. See Cleaner class inside {@link LogManager}.
+                    // own. See Cleaner class inside {@code LogManager}.
                     service.shutdown();
                     service.awaitTermination(terminationTimeout, timeUnit);
                   } catch (InterruptedException ignored) {
@@ -271,7 +270,6 @@ public final class MoreExecutors {
               }));
     }
 
-    @VisibleForTesting
     void addShutdownHook(Thread hook) {
       Runtime.getRuntime().addShutdownHook(hook);
     }
@@ -421,7 +419,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * Returns an {@link Executor} that runs each task in the thread that invokes {@link
+   * Returns an {@code Executor} that runs each task in the thread that invokes {@code
    * Executor#execute execute}, as in {@code ThreadPoolExecutor.CallerRunsPolicy}.
    *
    * <p>This executor is appropriate for tasks that are lightweight and not deeply chained.
@@ -449,13 +447,13 @@ public final class MoreExecutors {
    *       tasks -- even tasks that are not themselves {@code directExecutor} tasks.
    *   <li>If many such tasks are chained together (such as with {@code
    *       future.transform(...).transform(...).transform(...)....}), they may overflow the stack.
-   *       (In simple cases, callers can avoid this by registering all tasks with the same {@link
+   *       (In simple cases, callers can avoid this by registering all tasks with the same {@code
    *       MoreExecutors#newSequentialExecutor} wrapper around {@code directExecutor()}. More
    *       complex cases may require using thread pools or making deeper changes.)
    *   <li>If an exception propagates out of a {@code Runnable}, it is not necessarily seen by any
    *       {@code UncaughtExceptionHandler} for the thread. For example, if the callback passed to
-   *       {@link Futures#addCallback} throws an exception, that exception will be typically be
-   *       logged by the {@link ListenableFuture} implementation, even if the thread is configured
+   *       {@code Futures#addCallback} throws an exception, that exception will be typically be
+   *       logged by the {@code ListenableFuture} implementation, even if the thread is configured
    *       to do something different. In other cases, no code will catch the exception, and it may
    *       terminate whichever thread happens to trigger the execution.
    * </ul>
@@ -476,8 +474,8 @@ public final class MoreExecutors {
    * }
    * }</pre>
    *
-   * <p>This should be preferred to {@link #newDirectExecutorService()} because implementing the
-   * {@link ExecutorService} subinterface necessitates significant performance overhead.
+   * <p>This should be preferred to {@code #newDirectExecutorService()} because implementing the
+   * {@code ExecutorService} subinterface necessitates significant performance overhead.
    *
    * @since 18.0
    */
@@ -486,24 +484,24 @@ public final class MoreExecutors {
   }
 
   /**
-   * Returns an {@link Executor} that runs each task executed sequentially, such that no two tasks
+   * Returns an {@code Executor} that runs each task executed sequentially, such that no two tasks
    * are running concurrently.
    *
-   * <p>{@linkplain Executor#execute executed} tasks have a happens-before order as defined in the
+   * <p>{@code Executor#execute executed} tasks have a happens-before order as defined in the
    * Java Language Specification. Tasks execute with the same happens-before order that the function
-   * calls to {@link Executor#execute `execute()`} that submitted those tasks had.
+   * calls to {@code Executor#execute `execute()`} that submitted those tasks had.
    *
-   * <p>The executor uses {@code delegate} in order to {@link Executor#execute execute} each task in
+   * <p>The executor uses {@code delegate} in order to {@code Executor#execute execute} each task in
    * turn, and does not create any threads of its own.
    *
-   * <p>After execution begins on a thread from the {@code delegate} {@link Executor}, tasks are
+   * <p>After execution begins on a thread from the {@code delegate} {@code Executor}, tasks are
    * polled and executed from a task queue until there are no more tasks. The thread will not be
    * released until there are no more tasks to run.
    *
    * <p>If a task is submitted while a thread is executing tasks from the task queue, the thread
    * will not be released until that submitted task is also complete.
    *
-   * <p>If a task is {@linkplain Thread#interrupt interrupted} while a task is running:
+   * <p>If a task is {@code Thread#interrupt interrupted} while a task is running:
    *
    * <ol>
    *   <li>execution will not stop until the task queue is empty.
@@ -524,7 +522,7 @@ public final class MoreExecutors {
    * run. An attempt will be made to restart execution on the next call to {@code execute}. If the
    * {@code delegate} has begun to reject execution, the previously submitted tasks may never run,
    * despite not throwing a RejectedExecutionException synchronously with the call to {@code
-   * execute}. If this behaviour is problematic, use an Executor with a single thread (e.g. {@link
+   * execute}. If this behaviour is problematic, use an Executor with a single thread (e.g. {@code
    * Executors#newSingleThreadExecutor}).
    *
    * @since 23.3 (since 23.1 as {@code sequentialExecutor})
@@ -534,8 +532,8 @@ public final class MoreExecutors {
   }
 
   /**
-   * Creates an {@link ExecutorService} whose {@code submit} and {@code invokeAll} methods submit
-   * {@link ListenableFutureTask} instances to the given delegate executor. Those methods, as well
+   * Creates an {@code ExecutorService} whose {@code submit} and {@code invokeAll} methods submit
+   * {@code ListenableFutureTask} instances to the given delegate executor. Those methods, as well
    * as {@code execute} and {@code invokeAny}, are implemented in terms of calls to {@code
    * delegate.execute}. All other methods are forwarded unchanged to the delegate. This implies that
    * the returned {@code ListeningExecutorService} never calls the delegate's {@code submit}, {@code
@@ -558,8 +556,8 @@ public final class MoreExecutors {
   }
 
   /**
-   * Creates a {@link ScheduledExecutorService} whose {@code submit} and {@code invokeAll} methods
-   * submit {@link ListenableFutureTask} instances to the given delegate executor. Those methods, as
+   * Creates a {@code ScheduledExecutorService} whose {@code submit} and {@code invokeAll} methods
+   * submit {@code ListenableFutureTask} instances to the given delegate executor. Those methods, as
    * well as {@code execute} and {@code invokeAny}, are implemented in terms of calls to {@code
    * delegate.execute}. All other methods are forwarded unchanged to the delegate. This implies that
    * the returned {@code ListeningScheduledExecutorService} never calls the delegate's {@code
@@ -741,7 +739,7 @@ public final class MoreExecutors {
    */
 
   /**
-   * An implementation of {@link ExecutorService#invokeAny} for {@link ListeningExecutorService}
+   * An implementation of {@code ExecutorService#invokeAny} for {@code ListeningExecutorService}
    * implementations.
    */
   @ParametricNullness
@@ -756,7 +754,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * An implementation of {@link ExecutorService#invokeAny} for {@link ListeningExecutorService}
+   * An implementation of {@code ExecutorService#invokeAny} for {@code ListeningExecutorService}
    * implementations.
    */
   @SuppressWarnings("GoodTime") // should accept a java.time.Duration
@@ -863,7 +861,7 @@ public final class MoreExecutors {
    * <p>When running on AppEngine with access to <a
    * href="https://cloud.google.com/appengine/docs/standard/java/javadoc/">AppEngine legacy
    * APIs</a>, this method returns {@code ThreadManager.currentRequestThreadFactory()}. Otherwise,
-   * it returns {@link Executors#defaultThreadFactory()}.
+   * it returns {@code Executors#defaultThreadFactory()}.
    *
    * @since 14.0
    */
@@ -925,7 +923,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * Creates a thread using {@link #platformThreadFactory}, and sets its name to {@code name} unless
+   * Creates a thread using {@code #platformThreadFactory}, and sets its name to {@code name} unless
    * changing the name is forbidden by the security manager.
    */
   // concurrency
@@ -947,10 +945,10 @@ public final class MoreExecutors {
   // calculate names?
 
   /**
-   * Creates an {@link Executor} that renames the {@link Thread threads} that its tasks run in.
+   * Creates an {@code Executor} that renames the {@code Thread threads} that its tasks run in.
    *
    * <p>The names are retrieved from the {@code nameSupplier} on the thread that is being renamed
-   * right before each task is run. The renaming is best effort, if a {@link SecurityManager}
+   * right before each task is run. The renaming is best effort, if a {@code SecurityManager}
    * prevents the renaming then it will be skipped but the tasks will still execute.
    *
    * @param executor The executor to decorate
@@ -969,11 +967,11 @@ public final class MoreExecutors {
   }
 
   /**
-   * Creates an {@link ExecutorService} that renames the {@link Thread threads} that its tasks run
+   * Creates an {@code ExecutorService} that renames the {@code Thread threads} that its tasks run
    * in.
    *
    * <p>The names are retrieved from the {@code nameSupplier} on the thread that is being renamed
-   * right before each task is run. The renaming is best effort, if a {@link SecurityManager}
+   * right before each task is run. The renaming is best effort, if a {@code SecurityManager}
    * prevents the renaming then it will be skipped but the tasks will still execute.
    *
    * @param service The executor to decorate
@@ -998,11 +996,11 @@ public final class MoreExecutors {
   }
 
   /**
-   * Creates a {@link ScheduledExecutorService} that renames the {@link Thread threads} that its
+   * Creates a {@code ScheduledExecutorService} that renames the {@code Thread threads} that its
    * tasks run in.
    *
    * <p>The names are retrieved from the {@code nameSupplier} on the thread that is being renamed
-   * right before each task is run. The renaming is best effort, if a {@link SecurityManager}
+   * right before each task is run. The renaming is best effort, if a {@code SecurityManager}
    * prevents the renaming then it will be skipped but the tasks will still execute.
    *
    * @param service The executor to decorate
@@ -1033,14 +1031,14 @@ public final class MoreExecutors {
    * <p>The method takes the following steps:
    *
    * <ol>
-   *   <li>calls {@link ExecutorService#shutdown()}, disabling acceptance of new submitted tasks.
+   *   <li>calls {@code ExecutorService#shutdown()}, disabling acceptance of new submitted tasks.
    *   <li>awaits executor service termination for half of the specified timeout.
-   *   <li>if the timeout expires, it calls {@link ExecutorService#shutdownNow()}, cancelling
+   *   <li>if the timeout expires, it calls {@code ExecutorService#shutdownNow()}, cancelling
    *       pending tasks and interrupting running tasks.
    *   <li>awaits executor service termination for the other half of the specified timeout.
    * </ol>
    *
-   * <p>If, at any step of the process, the calling thread is interrupted, the method calls {@link
+   * <p>If, at any step of the process, the calling thread is interrupted, the method calls {@code
    * ExecutorService#shutdownNow()} and returns.
    *
    * @param service the {@code ExecutorService} to shut down
@@ -1062,14 +1060,14 @@ public final class MoreExecutors {
    * <p>The method takes the following steps:
    *
    * <ol>
-   *   <li>calls {@link ExecutorService#shutdown()}, disabling acceptance of new submitted tasks.
+   *   <li>calls {@code ExecutorService#shutdown()}, disabling acceptance of new submitted tasks.
    *   <li>awaits executor service termination for half of the specified timeout.
-   *   <li>if the timeout expires, it calls {@link ExecutorService#shutdownNow()}, cancelling
+   *   <li>if the timeout expires, it calls {@code ExecutorService#shutdownNow()}, cancelling
    *       pending tasks and interrupting running tasks.
    *   <li>awaits executor service termination for the other half of the specified timeout.
    * </ol>
    *
-   * <p>If, at any step of the process, the calling thread is interrupted, the method calls {@link
+   * <p>If, at any step of the process, the calling thread is interrupted, the method calls {@code
    * ExecutorService#shutdownNow()} and returns.
    *
    * @param service the {@code ExecutorService} to shut down
@@ -1105,7 +1103,7 @@ public final class MoreExecutors {
   }
 
   /**
-   * Returns an Executor that will propagate {@link RejectedExecutionException} from the delegate
+   * Returns an Executor that will propagate {@code RejectedExecutionException} from the delegate
    * executor to the given {@code future}.
    *
    * <p>Note, the returned executor can only be used once.

@@ -14,23 +14,6 @@
 
 package dev.mccue.guava.concurrent;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.google.errorprone.annotations.ForOverride;
-import dev.mccue.guava.base.Strings;
-import dev.mccue.guava.concurrent.internal.InternalFutureFailureAccess;
-import dev.mccue.guava.concurrent.internal.InternalFutures;
-import dev.mccue.jsr305.CheckForNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-import java.util.Locale;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.concurrent.locks.LockSupport;
-
 import static dev.mccue.guava.base.Preconditions.checkNotNull;
 import static dev.mccue.guava.concurrent.NullnessCasts.uncheckedNull;
 import static java.lang.Integer.toHexString;
@@ -38,19 +21,42 @@ import static java.lang.System.identityHashCode;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater.newUpdater;
 
+import dev.mccue.guava.base.Strings;
+import dev.mccue.guava.concurrent.internal.InternalFutureFailureAccess;
+import dev.mccue.guava.concurrent.internal.InternalFutures;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.ForOverride;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.Locale;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.locks.LockSupport;
+import java.lang.System.Logger.Level;
+import java.lang.System.Logger;
+import dev.mccue.jsr305.CheckForNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
- * An abstract implementation of {@link ListenableFuture}, intended for advanced users only. More
- * common ways to create a {@code ListenableFuture} include instantiating a {@link SettableFuture},
- * submitting a task to a {@link ListeningExecutorService}, and deriving a {@code Future} from an
- * existing one, typically using methods like {@link Futures#transform(ListenableFuture,
- * dev.mccue.guava.base.Function, Executor) Futures.transform} and {@link
+ * An abstract implementation of {@code ListenableFuture}, intended for advanced users only. More
+ * common ways to create a {@code ListenableFuture} include instantiating a {@code SettableFuture},
+ * submitting a task to a {@code ListeningExecutorService}, and deriving a {@code Future} from an
+ * existing one, typically using methods like {@code Futures#transform(ListenableFuture,
+ * dev.mccue.guava.base.Function, java.util.concurrent.Executor) Futures.transform} and {@code
  * Futures#catching(ListenableFuture, Class, dev.mccue.guava.base.Function,
- * Executor) Futures.catching}.
+ * java.util.concurrent.Executor) Futures.catching}.
  *
  * <p>This class implements all methods in {@code ListenableFuture}. Subclasses should provide a way
- * to set the result of the computation through the protected methods {@link #set(Object)}, {@link
- * #setFuture(ListenableFuture)} and {@link #setException(Throwable)}. Subclasses may also override
- * {@link #afterDone()}, which will be invoked automatically when the future completes. Subclasses
+ * to set the result of the computation through the protected methods {@code #set(Object)}, {@code
+ * #setFuture(ListenableFuture)} and {@code #setException(Throwable)}. Subclasses may also override
+ * {@code #afterDone()}, which will be invoked automatically when the future completes. Subclasses
  * should rarely override other methods.
  *
  * @author Sven Mawson
@@ -61,6 +67,8 @@ import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater.newUpdater
   "ShortCircuitBoolean", // we use non-short circuiting comparisons intentionally
   "nullness", // TODO(b/147136275): Remove once our checker understands & and |.
 })
+
+
 @ElementTypesAreNonnullByDefault
 public abstract class AbstractFuture<V extends @Nullable Object> extends InternalFutureFailureAccess
     implements ListenableFuture<V> {
@@ -90,7 +98,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   /**
    * A less abstract subclass of AbstractFuture. This can be used to optimize setFuture by ensuring
-   * that {@link #get} calls exactly the implementation of {@link AbstractFuture#get}.
+   * that {@code #get} calls exactly the implementation of {@code AbstractFuture#get}.
    */
   abstract static class TrustedFuture<V extends @Nullable Object> extends AbstractFuture<V>
       implements Trusted<V> {
@@ -174,8 +182,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
           Level.ERROR, "SafeAtomicHelper is broken!", thrownAtomicReferenceFieldUpdaterFailure);
     }
   }
-
-  /** Waiter links form a Treiber stack, in the {@link #waiters} field. */
+  /** Waiter links form a Treiber stack, in the {@code #waiters} field. */
   private static final class Waiter {
     static final Waiter TOMBSTONE = new Waiter(false /* ignored param */);
 
@@ -250,7 +257,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     }
   }
 
-  /** Listeners also form a stack through the {@link #listeners} field. */
+  /** Listeners also form a stack through the {@code #listeners} field. */
   private static final class Listener {
     static final Listener TOMBSTONE = new Listener();
     @CheckForNull // null only for TOMBSTONE
@@ -275,7 +282,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   /** A special value to represent {@code null}. */
   private static final Object NULL = new Object();
 
-  /** A special value to represent failure, when {@link #setException} is called successfully. */
+  /** A special value to represent failure, when {@code #setException} is called successfully. */
   private static final class Failure {
     static final Failure FALLBACK_INSTANCE =
         new Failure(
@@ -355,10 +362,10 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    *
    * <ul>
    *   <li>{@code null} initial state, nothing has happened.
-   *   <li>{@link Cancellation} terminal state, {@code cancel} was called.
-   *   <li>{@link Failure} terminal state, {@code setException} was called.
-   *   <li>{@link SetFuture} intermediate state, {@code setFuture} was called.
-   *   <li>{@link #NULL} terminal state, {@code set(null)} was called.
+   *   <li>{@code Cancellation} terminal state, {@code cancel} was called.
+   *   <li>{@code Failure} terminal state, {@code setException} was called.
+   *   <li>{@code SetFuture} intermediate state, {@code setFuture} was called.
+   *   <li>{@code #NULL} terminal state, {@code set(null)} was called.
    *   <li>Any other non-null value, terminal state, {@code set} was called with a non-null
    *       argument.
    * </ul>
@@ -401,7 +408,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   /**
    * {@inheritDoc}
    *
-   * <p>The default {@link AbstractFuture} implementation throws {@code InterruptedException} if the
+   * <p>The default {@code AbstractFuture} implementation throws {@code InterruptedException} if the
    * current thread is interrupted during the call, even if the value is already available.
    *
    * @throws CancellationException {@inheritDoc}
@@ -514,7 +521,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   /**
    * {@inheritDoc}
    *
-   * <p>The default {@link AbstractFuture} implementation throws {@code InterruptedException} if the
+   * <p>The default {@code AbstractFuture} implementation throws {@code InterruptedException} if the
    * current thread is interrupted during the call, even if the value is already available.
    *
    * @throws CancellationException {@inheritDoc}
@@ -561,7 +568,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     return getDoneValue(requireNonNull(value));
   }
 
-  /** Unboxes {@code obj}. Assumes that obj is not {@code null} or a {@link SetFuture}. */
+  /** Unboxes {@code obj}. Assumes that obj is not {@code null} or a {@code SetFuture}. */
   @ParametricNullness
   private V getDoneValue(Object obj) throws ExecutionException {
     // While this seems like it might be too branch-y, simple benchmarking proves it to be
@@ -598,12 +605,12 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   /**
    * {@inheritDoc}
    *
-   * <p>If a cancellation attempt succeeds on a {@code Future} that had previously been {@linkplain
+   * <p>If a cancellation attempt succeeds on a {@code Future} that had previously been {@code
    * #setFuture set asynchronously}, then the cancellation will also be propagated to the delegate
    * {@code Future} that was supplied in the {@code setFuture} call.
    *
    * <p>Rather than override this method to perform additional cancellation work or cleanup,
-   * subclasses should override {@link #afterDone}, consulting {@link #isCancelled} and {@link
+   * subclasses should override {@code #afterDone}, consulting {@code #isCancelled} and {@code
    * #wasInterrupted} as necessary. This ensures that the work is done even if the future is
    * cancelled without a call to {@code cancel}, such as by calling {@code
    * setFuture(cancelledFuture)}.
@@ -682,12 +689,12 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   /**
    * Subclasses can override this method to implement interruption of the future's computation. The
-   * method is invoked automatically by a successful call to {@link #cancel(boolean) cancel(true)}.
+   * method is invoked automatically by a successful call to {@code #cancel(boolean) cancel(true)}.
    *
    * <p>The default implementation does nothing.
    *
-   * <p>This method is likely to be deprecated. Prefer to override {@link #afterDone}, checking
-   * {@link #wasInterrupted} to decide whether to interrupt your task.
+   * <p>This method is likely to be deprecated. Prefer to override {@code #afterDone}, checking
+   * {@code #wasInterrupted} to decide whether to interrupt your task.
    *
    * @since 10.0
    */
@@ -742,12 +749,12 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   /**
    * Sets the result of this {@code Future} unless this {@code Future} has already been cancelled or
-   * set (including {@linkplain #setFuture set asynchronously}). When a call to this method returns,
-   * the {@code Future} is guaranteed to be {@linkplain #isDone done} <b>only if</b> the call was
+   * set (including {@code #setFuture set asynchronously}). When a call to this method returns,
+   * the {@code Future} is guaranteed to be {@code #isDone done} <b>only if</b> the call was
    * accepted (in which case it returns {@code true}). If it returns {@code false}, the {@code
    * Future} may have previously been set asynchronously, in which case its result may not be known
    * yet. That result, though not yet known, cannot be overridden by a call to a {@code set*}
-   * method, only by a call to {@link #cancel}.
+   * method, only by a call to {@code #cancel}.
    *
    * <p>Beware of completing a future while holding a lock. Its listeners may do slow work or
    * acquire other locks, risking deadlocks.
@@ -767,12 +774,12 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   /**
    * Sets the failed result of this {@code Future} unless this {@code Future} has already been
-   * cancelled or set (including {@linkplain #setFuture set asynchronously}). When a call to this
-   * method returns, the {@code Future} is guaranteed to be {@linkplain #isDone done} <b>only if</b>
+   * cancelled or set (including {@code #setFuture set asynchronously}). When a call to this
+   * method returns, the {@code Future} is guaranteed to be {@code #isDone done} <b>only if</b>
    * the call was accepted (in which case it returns {@code true}). If it returns {@code false}, the
    * {@code Future} may have previously been set asynchronously, in which case its result may not be
    * known yet. That result, though not yet known, cannot be overridden by a call to a {@code set*}
-   * method, only by a call to {@link #cancel}.
+   * method, only by a call to {@code #cancel}.
    *
    * <p>Beware of completing a future while holding a lock. Its listeners may do slow work or
    * acquire other locks, risking deadlocks.
@@ -795,11 +802,11 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    * supplied {@code Future} is done, unless this {@code Future} has already been cancelled or set
    * (including "set asynchronously," defined below).
    *
-   * <p>If the supplied future is {@linkplain #isDone done} when this method is called and the call
+   * <p>If the supplied future is {@code #isDone done} when this method is called and the call
    * is accepted, then this future is guaranteed to have been completed with the supplied future by
    * the time this method returns. If the supplied future is not done and the call is accepted, then
    * the future will be <i>set asynchronously</i>. Note that such a result, though not yet known,
-   * cannot be overridden by a call to a {@code set*} method, only by a call to {@link #cancel}.
+   * cannot be overridden by a call to a {@code set*} method, only by a call to {@code #cancel}.
    *
    * <p>If the call {@code setFuture(delegate)} is accepted and this {@code Future} is later
    * cancelled, cancellation will be propagated to {@code delegate}. Additionally, any call to
@@ -808,7 +815,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    *
    * <p>Note that, even if the supplied future is cancelled and it causes this future to complete,
    * it will never trigger interruption behavior. In particular, it will not cause this future to
-   * invoke the {@link #interruptTask} method, and the {@link #wasInterrupted} method will not
+   * invoke the {@code #interruptTask} method, and the {@code #wasInterrupted} method will not
    * return {@code true}.
    *
    * <p>Beware of completing a future while holding a lock. Its listeners may do slow work or
@@ -871,10 +878,10 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   /**
-   * Returns a value that satisfies the contract of the {@link #value} field based on the state of
+   * Returns a value that satisfies the contract of the {@code #value} field based on the state of
    * given future.
    *
-   * <p>This is approximately the inverse of {@link #getDoneValue(Object)}
+   * <p>This is approximately the inverse of {@code #getDoneValue(Object)}
    */
   private static Object getFutureValue(ListenableFuture<?> future) {
     if (future instanceof Trusted) {
@@ -952,7 +959,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   /**
-   * An inlined private copy of {@link Uninterruptibles#getUninterruptibly} used to break an
+   * An inlined private copy of {@code Uninterruptibles#getUninterruptibly} used to break an
    * internal dependency on other /util/concurrent classes.
    */
   @ParametricNullness
@@ -1042,7 +1049,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   /**
    * Callback method that is called exactly once after the future is completed.
    *
-   * <p>If {@link #interruptTask} is also run during completion, {@link #afterDone} runs after it.
+   * <p>If {@code #interruptTask} is also run during completion, {@code #afterDone} runs after it.
    *
    * <p>The default implementation of this method in {@code AbstractFuture} does nothing. This is
    * intended for very lightweight cleanup work, for example, timing statistics or clearing fields.
@@ -1069,7 +1076,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    *
    * <p>This method is {@code protected} so that classes like {@code
    * dev.mccue.guava.concurrent.SettableFuture} do not expose it to their users as an
-   * instance method. In the unlikely event that you need to call this method, call {@link
+   * instance method. In the unlikely event that you need to call this method, call {@code
    * InternalFutures#tryInternalFastPathGetFailure(InternalFutureFailureAccess)}.
    *
    * @since 27.0
@@ -1101,7 +1108,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     }
   }
 
-  /** Releases all threads in the {@link #waiters} list, and clears the list. */
+  /** Releases all threads in the {@code #waiters} list, and clears the list. */
   private void releaseWaiters() {
     Waiter head = ATOMIC_HELPER.gasWaiters(this, Waiter.TOMBSTONE);
     for (Waiter currentWaiter = head; currentWaiter != null; currentWaiter = currentWaiter.next) {
@@ -1110,7 +1117,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   /**
-   * Clears the {@link #listeners} list and prepends its contents to {@code onto}, least recently
+   * Clears the {@code #listeners} list and prepends its contents to {@code onto}, least recently
    * added first.
    */
   @CheckForNull
@@ -1258,7 +1265,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   /**
-   * Submits the given runnable to the given {@link Executor} catching and logging all {@linkplain
+   * Submits the given runnable to the given {@code Executor} catching and logging all {@code
    * RuntimeException runtime exceptions} thrown by the executor.
    */
   private static void executeListener(Runnable runnable, Executor executor) {
@@ -1276,31 +1283,33 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   private abstract static class AtomicHelper {
-    /** Non-volatile write of the thread to the {@link Waiter#thread} field. */
+    /** Non-volatile write of the thread to the {@code Waiter#thread} field. */
     abstract void putThread(Waiter waiter, Thread newValue);
 
-    /** Non-volatile write of the waiter to the {@link Waiter#next} field. */
+    /** Non-volatile write of the waiter to the {@code Waiter#next} field. */
     abstract void putNext(Waiter waiter, @CheckForNull Waiter newValue);
 
-    /** Performs a CAS operation on the {@link #waiters} field. */
+    /** Performs a CAS operation on the {@code #waiters} field. */
     abstract boolean casWaiters(
         AbstractFuture<?> future, @CheckForNull Waiter expect, @CheckForNull Waiter update);
 
-    /** Performs a CAS operation on the {@link #listeners} field. */
+    /** Performs a CAS operation on the {@code #listeners} field. */
     abstract boolean casListeners(
         AbstractFuture<?> future, @CheckForNull Listener expect, Listener update);
 
-    /** Performs a GAS operation on the {@link #waiters} field. */
+    /** Performs a GAS operation on the {@code #waiters} field. */
     abstract Waiter gasWaiters(AbstractFuture<?> future, Waiter update);
 
-    /** Performs a GAS operation on the {@link #listeners} field. */
+    /** Performs a GAS operation on the {@code #listeners} field. */
     abstract Listener gasListeners(AbstractFuture<?> future, Listener update);
 
-    /** Performs a CAS operation on the {@link #value} field. */
+    /** Performs a CAS operation on the {@code #value} field. */
     abstract boolean casValue(AbstractFuture<?> future, @CheckForNull Object expect, Object update);
   }
 
-  /** {@link AtomicHelper} based on {@link AtomicReferenceFieldUpdater}. */
+
+
+  /** {@code AtomicHelper} based on {@code AtomicReferenceFieldUpdater}. */
   @SuppressWarnings("rawtypes")
   private static final class SafeAtomicHelper extends AtomicHelper {
     final AtomicReferenceFieldUpdater<Waiter, Thread> waiterThreadUpdater;
@@ -1343,13 +1352,13 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       return listenersUpdater.compareAndSet(future, expect, update);
     }
 
-    /** Performs a GAS operation on the {@link #listeners} field. */
+    /** Performs a GAS operation on the {@code #listeners} field. */
     @Override
     Listener gasListeners(AbstractFuture<?> future, Listener update) {
       return listenersUpdater.getAndSet(future, update);
     }
 
-    /** Performs a GAS operation on the {@link #waiters} field. */
+    /** Performs a GAS operation on the {@code #waiters} field. */
     @Override
     Waiter gasWaiters(AbstractFuture<?> future, Waiter update) {
       return waitersUpdater.getAndSet(future, update);
@@ -1362,7 +1371,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   }
 
   /**
-   * {@link AtomicHelper} based on {@code synchronized} and volatile writes.
+   * {@code AtomicHelper} based on {@code synchronized} and volatile writes.
    *
    * <p>This is an implementation of last resort for when certain basic VM features are broken (like
    * AtomicReferenceFieldUpdater).
@@ -1401,7 +1410,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       }
     }
 
-    /** Performs a GAS operation on the {@link #listeners} field. */
+    /** Performs a GAS operation on the {@code #listeners} field. */
     @Override
     Listener gasListeners(AbstractFuture<?> future, Listener update) {
       synchronized (future) {
@@ -1413,7 +1422,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       }
     }
 
-    /** Performs a GAS operation on the {@link #waiters} field. */
+    /** Performs a GAS operation on the {@code #waiters} field. */
     @Override
     Waiter gasWaiters(AbstractFuture<?> future, Waiter update) {
       synchronized (future) {

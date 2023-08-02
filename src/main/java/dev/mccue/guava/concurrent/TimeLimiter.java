@@ -39,12 +39,12 @@ public interface TimeLimiter {
   /**
    * Returns an instance of {@code interfaceType} that delegates all method calls to the {@code
    * target} object, enforcing the specified time limit on each call. This time-limited delegation
-   * is also performed for calls to {@link Object#equals}, {@link Object#hashCode}, and {@link
+   * is also performed for calls to {@code Object#equals}, {@code Object#hashCode}, and {@code
    * Object#toString}.
    *
    * <p>If the target method call finishes before the limit is reached, the return value or
    * exception is propagated to the caller exactly as-is. If, on the other hand, the time limit is
-   * reached, the proxy will attempt to abort the call to the target, and will throw an {@link
+   * reached, the proxy will attempt to abort the call to the target, and will throw an {@code
    * UncheckedTimeoutException} to the caller.
    *
    * <p>It is important to note that the primary purpose of the proxy object is to return control to
@@ -83,12 +83,12 @@ public interface TimeLimiter {
   /**
    * Returns an instance of {@code interfaceType} that delegates all method calls to the {@code
    * target} object, enforcing the specified time limit on each call. This time-limited delegation
-   * is also performed for calls to {@link Object#equals}, {@link Object#hashCode}, and {@link
+   * is also performed for calls to {@code Object#equals}, {@code Object#hashCode}, and {@code
    * Object#toString}.
    *
    * <p>If the target method call finishes before the limit is reached, the return value or
    * exception is propagated to the caller exactly as-is. If, on the other hand, the time limit is
-   * reached, the proxy will attempt to abort the call to the target, and will throw an {@link
+   * reached, the proxy will attempt to abort the call to the target, and will throw an {@code
    * UncheckedTimeoutException} to the caller.
    *
    * <p>It is important to note that the primary purpose of the proxy object is to return control to
@@ -127,7 +127,7 @@ public interface TimeLimiter {
    * Invokes a specified Callable, timing out after the specified time limit. If the target method
    * call finishes before the limit is reached, the return value or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the call to
-   * the target, and throw a {@link TimeoutException} to the caller.
+   * the target, and throw a {@code TimeoutException} to the caller.
    *
    * @param callable the Callable to execute
    * @param timeoutDuration with timeoutUnit, the maximum length of time to wait
@@ -151,7 +151,7 @@ public interface TimeLimiter {
    * Invokes a specified Callable, timing out after the specified time limit. If the target method
    * call finishes before the limit is reached, the return value or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the call to
-   * the target, and throw a {@link TimeoutException} to the caller.
+   * the target, and throw a {@code TimeoutException} to the caller.
    *
    * @param callable the Callable to execute
    * @param timeout the maximum length of time to wait
@@ -174,9 +174,9 @@ public interface TimeLimiter {
    * Invokes a specified Callable, timing out after the specified time limit. If the target method
    * call finishes before the limit is reached, the return value or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the call to
-   * the target, and throw a {@link TimeoutException} to the caller.
+   * the target, and throw a {@code TimeoutException} to the caller.
    *
-   * <p>The difference with {@link #callWithTimeout(Callable, long, TimeUnit)} is that this method
+   * <p>The difference with {@code #callWithTimeout(Callable, long, TimeUnit)} is that this method
    * will ignore interrupts on the current thread.
    *
    * @param callable the Callable to execute
@@ -200,9 +200,9 @@ public interface TimeLimiter {
    * Invokes a specified Callable, timing out after the specified time limit. If the target method
    * call finishes before the limit is reached, the return value or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the call to
-   * the target, and throw a {@link TimeoutException} to the caller.
+   * the target, and throw a {@code TimeoutException} to the caller.
    *
-   * <p>The difference with {@link #callWithTimeout(Callable, Duration)} is that this method will
+   * <p>The difference with {@code #callWithTimeout(Callable, Duration)} is that this method will
    * ignore interrupts on the current thread.
    *
    * @param callable the Callable to execute
@@ -226,7 +226,7 @@ public interface TimeLimiter {
    * Invokes a specified Runnable, timing out after the specified time limit. If the target method
    * run finishes before the limit is reached, this method returns or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the run, and
-   * throw a {@link TimeoutException} to the caller.
+   * throw a {@code TimeoutException} to the caller.
    *
    * @param runnable the Runnable to execute
    * @param timeoutDuration with timeoutUnit, the maximum length of time to wait
@@ -245,7 +245,7 @@ public interface TimeLimiter {
    * Invokes a specified Runnable, timing out after the specified time limit. If the target method
    * run finishes before the limit is reached, this method returns or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the run, and
-   * throw a {@link TimeoutException} to the caller.
+   * throw a {@code TimeoutException} to the caller.
    *
    * @param runnable the Runnable to execute
    * @param timeout the maximum length of time to wait
@@ -264,9 +264,9 @@ public interface TimeLimiter {
    * Invokes a specified Runnable, timing out after the specified time limit. If the target method
    * run finishes before the limit is reached, this method returns or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the run, and
-   * throw a {@link TimeoutException} to the caller.
+   * throw a {@code TimeoutException} to the caller.
    *
-   * <p>The difference with {@link #runWithTimeout(Runnable, long, TimeUnit)} is that this method
+   * <p>The difference with {@code #runWithTimeout(Runnable, long, TimeUnit)} is that this method
    * will ignore interrupts on the current thread.
    *
    * @param runnable the Runnable to execute
@@ -285,9 +285,9 @@ public interface TimeLimiter {
    * Invokes a specified Runnable, timing out after the specified time limit. If the target method
    * run finishes before the limit is reached, this method returns or a wrapped exception is
    * propagated. If, on the other hand, the time limit is reached, we attempt to abort the run, and
-   * throw a {@link TimeoutException} to the caller.
+   * throw a {@code TimeoutException} to the caller.
    *
-   * <p>The difference with {@link #runWithTimeout(Runnable, Duration)} is that this method will
+   * <p>The difference with {@code #runWithTimeout(Runnable, Duration)} is that this method will
    * ignore interrupts on the current thread.
    *
    * @param runnable the Runnable to execute

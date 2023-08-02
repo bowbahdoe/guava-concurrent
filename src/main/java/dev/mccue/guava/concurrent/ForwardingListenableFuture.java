@@ -19,11 +19,11 @@ import java.util.concurrent.Executor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link ListenableFuture} which forwards all its method calls to another future. Subclasses
+ * A {@code ListenableFuture} which forwards all its method calls to another future. Subclasses
  * should override one or more methods to modify the behavior of the backing future as desired per
  * the <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * <p>Most subclasses can just use {@link SimpleForwardingListenableFuture}.
+ * <p>Most subclasses can just use {@code SimpleForwardingListenableFuture}.
  *
  * @author Shardul Deo
  * @since 4.0
@@ -45,8 +45,8 @@ public abstract class ForwardingListenableFuture<V extends @Nullable Object>
 
   // TODO(cpovirk): Use standard Javadoc form for SimpleForwarding* class and constructor
   /**
-   * A simplified version of {@link ForwardingListenableFuture} where subclasses can pass in an
-   * already constructed {@link ListenableFuture} as the delegate.
+   * A simplified version of {@code ForwardingListenableFuture} where subclasses can pass in an
+   * already constructed {@code ListenableFuture} as the delegate.
    *
    * @since 9.0
    */

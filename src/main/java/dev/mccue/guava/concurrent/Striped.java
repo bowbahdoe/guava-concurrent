@@ -16,7 +16,6 @@ package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.collect.Lists.newArrayList;
 
-
 import dev.mccue.guava.base.MoreObjects;
 import dev.mccue.guava.base.Preconditions;
 import dev.mccue.guava.base.Supplier;
@@ -51,16 +50,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * <p>The guarantee provided by this class is that equal keys lead to the same lock (or semaphore),
  * i.e. {@code if (key1.equals(key2))} then {@code striped.get(key1) == striped.get(key2)} (assuming
- * {@link Object#hashCode()} is correctly implemented for the keys). Note that if {@code key1} is
+ * {@code Object#hashCode()} is correctly implemented for the keys). Note that if {@code key1} is
  * <strong>not</strong> equal to {@code key2}, it is <strong>not</strong> guaranteed that {@code
  * striped.get(key1) != striped.get(key2)}; the elements might nevertheless be mapped to the same
  * lock. The lower the number of stripes, the higher the probability of this happening.
  *
  * <p>There are three flavors of this class: {@code Striped<Lock>}, {@code Striped<Semaphore>}, and
- * {@code Striped<ReadWriteLock>}. For each type, two implementations are offered: {@linkplain
- * #lock(int) strong} and {@linkplain #lazyWeakLock(int) weak} {@code Striped<Lock>}, {@linkplain
- * #semaphore(int, int) strong} and {@linkplain #lazyWeakSemaphore(int, int) weak} {@code
- * Striped<Semaphore>}, and {@linkplain #readWriteLock(int) strong} and {@linkplain
+ * {@code Striped<ReadWriteLock>}. For each type, two implementations are offered: {@code
+ * #lock(int) strong} and {@code #lazyWeakLock(int) weak} {@code Striped<Lock>}, {@code
+ * #semaphore(int, int) strong} and {@code #lazyWeakSemaphore(int, int) weak} {@code
+ * Striped<Semaphore>}, and {@code #readWriteLock(int) strong} and {@code
  * #lazyWeakReadWriteLock(int) weak} {@code Striped<ReadWriteLock>}. <i>Strong</i> means that all
  * stripes (locks/semaphores) are initialized eagerly, and are not reclaimed unless {@code Striped}
  * itself is reclaimable. <i>Weak</i> means that locks/semaphores are created lazily, and they are
@@ -118,7 +117,7 @@ public abstract class Striped<L> {
   public abstract int size();
 
   /**
-   * Returns the stripes that correspond to the passed objects, in ascending (as per {@link
+   * Returns the stripes that correspond to the passed objects, in ascending (as per {@code
    * #getAt(int)}) order. Thus, threads that use the stripes in the order returned by this method
    * are guaranteed to not deadlock each other.
    *
@@ -133,7 +132,7 @@ public abstract class Striped<L> {
    *
    * @param keys arbitrary non-null keys
    * @return the stripes corresponding to the objects (one per each object, derived by delegating to
-   *     {@link #get(Object)}; may contain duplicates), in an increasing index order.
+   *     {@code #get(Object)}; may contain duplicates), in an increasing index order.
    */
   public Iterable<L> bulkGet(Iterable<? extends Object> keys) {
     // Initially using the list to store the keys, then reusing it to store the respective L's
@@ -387,7 +386,6 @@ public abstract class Striped<L> {
    * AtomicReferenceArray of size 2^k. To map a user key into a stripe, we take a k-bit slice of the
    * user key's (smeared) hashCode(). The stripes are lazily initialized and are weakly referenced.
    */
-  @VisibleForTesting
   static class SmallLazyStriped<L> extends PowerOfTwoStriped<L> {
     final AtomicReferenceArray<@Nullable ArrayReference<? extends L>> locks;
     final Supplier<L> supplier;
@@ -459,7 +457,6 @@ public abstract class Striped<L> {
    * where the key domain is [0..2^k). To map a user key into a stripe, we take a k-bit slice of the
    * user key's (smeared) hashCode(). The stripes are lazily initialized and are weakly referenced.
    */
-  @VisibleForTesting
   static class LargeLazyStriped<L> extends PowerOfTwoStriped<L> {
     final ConcurrentMap<Integer, L> locks;
     final Supplier<L> supplier;
@@ -507,7 +504,7 @@ public abstract class Striped<L> {
    * As of 2010/06/11, this method is identical to the (package private) hash method in OpenJDK 7's
    * java.util.HashMap class.
    */
-  // Copied from java/dev.mccue.guava.collect/Hashing.java
+  // Copied from java/com/google/common/collect/Hashing.java
   private static int smear(int hashCode) {
     hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
     return hashCode ^ (hashCode >>> 7) ^ (hashCode >>> 4);

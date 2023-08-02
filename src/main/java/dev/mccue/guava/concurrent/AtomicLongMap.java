@@ -37,8 +37,8 @@ import dev.mccue.jsr305.CheckForNull;
  * {@code K}. If a key has not yet been associated with a value, its implicit value is zero.
  *
  * <p>Most methods in this class treat absent values and zero values identically, as individually
- * documented. Exceptions to this are {@link #containsKey}, {@link #size}, {@link #isEmpty}, {@link
- * #asMap}, and {@link #toString}.
+ * documented. Exceptions to this are {@code #containsKey}, {@code #size}, {@code #isEmpty}, {@code
+ * #asMap}, and {@code #toString}.
  *
  * <p>Instances of this class may be used by multiple threads concurrently. All operations are
  * atomic unless otherwise noted.
@@ -46,11 +46,11 @@ import dev.mccue.jsr305.CheckForNull;
  * <p>Instances of this class are serializable if the keys are serializable.
  *
  * <p><b>Note:</b> If your values are always positive and less than 2^31, you may wish to use a
- * {@link dev.mccue.guava.collect.Multiset} such as {@link
+ * {@code dev.mccue.guava.collect.Multiset} such as {@code
  * dev.mccue.guava.collect.ConcurrentHashMultiset} instead.
  *
  * <p><b>Warning:</b> Unlike {@code Multiset}, entries whose values are zero are not automatically
- * removed from the map. Instead they must be removed manually with {@link #removeAllZeros}.
+ * removed from the map. Instead they must be removed manually with {@code #removeAllZeros}.
  *
  * @author Charles Fry
  * @since 11.0

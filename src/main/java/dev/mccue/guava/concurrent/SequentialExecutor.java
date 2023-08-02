@@ -15,11 +15,14 @@
 package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.base.Preconditions.checkNotNull;
+import static dev.mccue.guava.concurrent.SequentialExecutor.WorkerRunningState.IDLE;
+import static dev.mccue.guava.concurrent.SequentialExecutor.WorkerRunningState.QUEUED;
+import static dev.mccue.guava.concurrent.SequentialExecutor.WorkerRunningState.QUEUING;
+import static dev.mccue.guava.concurrent.SequentialExecutor.WorkerRunningState.RUNNING;
 import static java.lang.System.identityHashCode;
 
 import dev.mccue.guava.base.Preconditions;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.Executor;
@@ -32,15 +35,15 @@ import dev.mccue.jsr305.CheckForNull;
  * Executor ensuring that all Runnables submitted are executed in order, using the provided
  * Executor, and sequentially such that no two will ever be running at the same time.
  *
- * <p>Tasks submitted to {@link #execute(Runnable)} are executed in FIFO order.
+ * <p>Tasks submitted to {@code #execute(Runnable)} are executed in FIFO order.
  *
  * <p>The execution of tasks is done by one thread as long as there are tasks left in the queue.
- * When a task is {@linkplain Thread#interrupt interrupted}, execution of subsequent tasks
- * continues. See {@link QueueWorker#workOnQueue} for details.
+ * When a task is {@code Thread#interrupt interrupted}, execution of subsequent tasks
+ * continues. See {@code QueueWorker#workOnQueue} for details.
  *
  * <p>{@code RuntimeException}s thrown by tasks are simply logged and the executor keeps trucking.
  * If an {@code Error} is thrown, the error will propagate and execution will stop until it is
- * restarted by a call to {@link #execute}.
+ * restarted by a call to {@code #execute}.
  */
 @ElementTypesAreNonnullByDefault
 final class SequentialExecutor implements Executor {
@@ -62,9 +65,9 @@ final class SequentialExecutor implements Executor {
   @GuardedBy("queue")
   private final Deque<Runnable> queue = new ArrayDeque<>();
 
-  /** see {@link WorkerRunningState} */
+  /** see {@code WorkerRunningState} */
   @GuardedBy("queue")
-  private WorkerRunningState workerRunningState = WorkerRunningState.IDLE;
+  private WorkerRunningState workerRunningState = IDLE;
 
   /**
    * This counter prevents an ABA issue where a thread may successfully schedule the worker, the
@@ -78,7 +81,7 @@ final class SequentialExecutor implements Executor {
 
   private final QueueWorker worker = new QueueWorker();
 
-  /** Use {@link MoreExecutors#newSequentialExecutor} */
+  /** Use {@code MoreExecutors#newSequentialExecutor} */
   SequentialExecutor(Executor executor) {
     this.executor = Preconditions.checkNotNull(executor);
   }
@@ -97,7 +100,7 @@ final class SequentialExecutor implements Executor {
     synchronized (queue) {
       // If the worker is already running (or execute() on the delegate returned successfully, and
       // the worker has yet to start) then we don't need to start the worker.
-      if (workerRunningState == WorkerRunningState.RUNNING || workerRunningState == WorkerRunningState.QUEUED) {
+      if (workerRunningState == RUNNING || workerRunningState == QUEUED) {
         queue.add(task);
         return;
       }
@@ -123,7 +126,7 @@ final class SequentialExecutor implements Executor {
             }
           };
       queue.add(submittedTask);
-      workerRunningState = WorkerRunningState.QUEUING;
+      workerRunningState = QUEUING;
     }
 
     try {
@@ -131,7 +134,7 @@ final class SequentialExecutor implements Executor {
     } catch (RuntimeException | Error t) {
       synchronized (queue) {
         boolean removed =
-            (workerRunningState == WorkerRunningState.IDLE || workerRunningState == WorkerRunningState.QUEUING)
+            (workerRunningState == IDLE || workerRunningState == QUEUING)
                 && queue.removeLastOccurrence(submittedTask);
         // If the delegate is directExecutor(), the submitted runnable could have thrown a REE. But
         // that's handled by the log check that catches RuntimeExceptions in the queue worker.
@@ -148,23 +151,23 @@ final class SequentialExecutor implements Executor {
      * block, and reference field assignment is atomic, this may save reacquiring the lock when
      * another thread or the worker task has cleared the count and set the state.
      *
-     * <p>When {@link #executor} is a directExecutor(), the value written to
+     * <p>When {@code #executor} is a directExecutor(), the value written to
      * {@code workerRunningState} will be available synchronously, and behaviour will be
      * deterministic.
      */
     @SuppressWarnings("GuardedBy")
-    boolean alreadyMarkedQueued = workerRunningState != WorkerRunningState.QUEUING;
+    boolean alreadyMarkedQueued = workerRunningState != QUEUING;
     if (alreadyMarkedQueued) {
       return;
     }
     synchronized (queue) {
-      if (workerRunCount == oldRunCount && workerRunningState == WorkerRunningState.QUEUING) {
-        workerRunningState = WorkerRunningState.QUEUED;
+      if (workerRunCount == oldRunCount && workerRunningState == QUEUING) {
+        workerRunningState = QUEUED;
       }
     }
   }
 
-  /** Worker that runs tasks from {@link #queue} until it is empty. */
+  /** Worker that runs tasks from {@code #queue} until it is empty. */
   private final class QueueWorker implements Runnable {
     @CheckForNull Runnable task;
 
@@ -174,7 +177,7 @@ final class SequentialExecutor implements Executor {
         workOnQueue();
       } catch (Error e) {
         synchronized (queue) {
-          workerRunningState = WorkerRunningState.IDLE;
+          workerRunningState = IDLE;
         }
         throw e;
         // The execution of a task has ended abnormally.
@@ -184,15 +187,15 @@ final class SequentialExecutor implements Executor {
     }
 
     /**
-     * Continues executing tasks from {@link #queue} until it is empty.
+     * Continues executing tasks from {@code #queue} until it is empty.
      *
      * <p>The thread's interrupt bit is cleared before execution of each task.
      *
-     * <p>If the Thread in use is interrupted before or during execution of the tasks in {@link
+     * <p>If the Thread in use is interrupted before or during execution of the tasks in {@code
      * #queue}, the Executor will complete its tasks, and then restore the interruption. This means
      * that once the Thread returns to the Executor that this Executor composes, the interruption
      * will still be present. If the composed Executor is an ExecutorService, it can respond to
-     * shutdown() by returning tasks queued on that Thread after {@link #worker} drains the queue.
+     * shutdown() by returning tasks queued on that Thread after {@code #worker} drains the queue.
      */
     private void workOnQueue() {
       boolean interruptedDuringTask = false;
@@ -203,7 +206,7 @@ final class SequentialExecutor implements Executor {
             // Choose whether this thread will run or not after acquiring the lock on the first
             // iteration
             if (!hasSetRunning) {
-              if (workerRunningState == WorkerRunningState.RUNNING) {
+              if (workerRunningState == RUNNING) {
                 // Don't want to have two workers pulling from the queue.
                 return;
               } else {
@@ -211,13 +214,13 @@ final class SequentialExecutor implements Executor {
                 // thread as QUEUED after it already ran and exhausted the queue before returning
                 // from execute().
                 workerRunCount++;
-                workerRunningState = WorkerRunningState.RUNNING;
+                workerRunningState = RUNNING;
                 hasSetRunning = true;
               }
             }
             task = queue.poll();
             if (task == null) {
-              workerRunningState = WorkerRunningState.IDLE;
+              workerRunningState = IDLE;
               return;
             }
           }

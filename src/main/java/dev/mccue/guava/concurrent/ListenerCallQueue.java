@@ -30,25 +30,25 @@ import java.lang.System.Logger;
 /**
  * A list of listeners for implementing a concurrency friendly observable object.
  *
- * <p>Listeners are registered once via {@link #addListener} and then may be invoked by {@linkplain
- * #enqueue enqueueing} and then {@linkplain #dispatch dispatching} events.
+ * <p>Listeners are registered once via {@code #addListener} and then may be invoked by {@code
+ * #enqueue enqueueing} and then {@code #dispatch dispatching} events.
  *
  * <p>The API of this class is designed to make it easy to achieve the following properties
  *
  * <ul>
  *   <li>Multiple events for the same listener are never dispatched concurrently.
  *   <li>Events for the different listeners are dispatched concurrently.
- *   <li>All events for a given listener dispatch on the provided {@link #executor}.
+ *   <li>All events for a given listener dispatch on the provided {@code #executor}.
  *   <li>It is easy for the user to ensure that listeners are never invoked while holding locks.
  * </ul>
  *
  * The last point is subtle. Often the observable object will be managing its own internal state
  * using a lock, however it is dangerous to dispatch listeners while holding a lock because they
  * might run on the {@code directExecutor()} or be otherwise re-entrant (call back into your
- * object). So it is important to not call {@link #dispatch} while holding any locks. This is why
- * {@link #enqueue} and {@link #dispatch} are 2 different methods. It is expected that the decision
+ * object). So it is important to not call {@code #dispatch} while holding any locks. This is why
+ * {@code #enqueue} and {@code #dispatch} are 2 different methods. It is expected that the decision
  * to run a particular event is made during the state change, but the decision to actually invoke
- * the listeners can be delayed slightly so that locks can be dropped. Also, because {@link
+ * the listeners can be delayed slightly so that locks can be dropped. Also, because {@code
  * #dispatch} is expected to be called concurrently, it is idempotent.
  */
 @ElementTypesAreNonnullByDefault
@@ -67,8 +67,8 @@ final class ListenerCallQueue<L> {
   }
 
   /**
-   * Adds a listener that will be called using the given executor when events are later {@link
-   * #enqueue enqueued} and {@link #dispatch dispatched}.
+   * Adds a listener that will be called using the given executor when events are later {@code
+   * #enqueue enqueued} and {@code #dispatch dispatched}.
    */
   public void addListener(L listener, Executor executor) {
     checkNotNull(listener, "listener");
@@ -82,7 +82,7 @@ final class ListenerCallQueue<L> {
    * <p>The {@code toString} method of the Event itself will be used to describe the event in the
    * case of an error.
    *
-   * @param event the callback to execute on {@link #dispatch}
+   * @param event the callback to execute on {@code #dispatch}
    */
   public void enqueue(Event<L> event) {
     enqueueHelper(event, event);
@@ -91,7 +91,7 @@ final class ListenerCallQueue<L> {
   /**
    * Enqueues an event to be run on currently known listeners, with a label.
    *
-   * @param event the callback to execute on {@link #dispatch}
+   * @param event the callback to execute on {@code #dispatch}
    * @param label a description of the event to use in the case of an error
    */
   public void enqueue(Event<L> event, String label) {
@@ -124,7 +124,7 @@ final class ListenerCallQueue<L> {
    * A special purpose queue/executor that dispatches listener events serially on a configured
    * executor. Each event can be added and dispatched as separate phases.
    *
-   * <p>This class is very similar to {@link SequentialExecutor} with the exception that events can
+   * <p>This class is very similar to {@code SequentialExecutor} with the exception that events can
    * be added without necessarily executing immediately.
    */
   private static final class PerListenerQueue<L> implements Runnable {
@@ -132,7 +132,7 @@ final class ListenerCallQueue<L> {
     final Executor executor;
 
     @GuardedBy("this")
-    final Queue<Event<L>> waitQueue = Queues.newArrayDeque();
+    final Queue<ListenerCallQueue.Event<L>> waitQueue = Queues.newArrayDeque();
 
     @GuardedBy("this")
     final Queue<Object> labelQueue = Queues.newArrayDeque();
@@ -146,13 +146,13 @@ final class ListenerCallQueue<L> {
     }
 
     /** Enqueues an event to be run. */
-    synchronized void add(Event<L> event, Object label) {
+    synchronized void add(ListenerCallQueue.Event<L> event, Object label) {
       waitQueue.add(event);
       labelQueue.add(label);
     }
 
     /**
-     * Dispatches all listeners {@linkplain #enqueue enqueued} prior to this call, serially and in
+     * Dispatches all listeners {@code #enqueue enqueued} prior to this call, serially and in
      * order.
      */
     void dispatch() {
@@ -186,7 +186,7 @@ final class ListenerCallQueue<L> {
       boolean stillRunning = true;
       try {
         while (true) {
-          Event<L> nextToRun;
+          ListenerCallQueue.Event<L> nextToRun;
           Object nextLabel;
           synchronized (PerListenerQueue.this) {
             Preconditions.checkState(isThreadScheduled);

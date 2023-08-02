@@ -25,6 +25,7 @@ import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Aggregate future that collects (stores) results of each future. */
+
 @ElementTypesAreNonnullByDefault
 abstract class CollectionFuture<V extends @Nullable Object, C extends @Nullable Object>
     extends AggregateFuture<V, C> {
@@ -78,7 +79,7 @@ abstract class CollectionFuture<V extends @Nullable Object, C extends @Nullable 
 
   abstract C combine(List<@Nullable Present<V>> values);
 
-  /** Used for {@link Futures#allAsList} and {@link Futures#successfulAsList}. */
+  /** Used for {@code Futures#allAsList} and {@code Futures#successfulAsList}. */
   static final class ListFuture<V extends @Nullable Object>
       extends CollectionFuture<V, List<@Nullable V>> {
     ListFuture(

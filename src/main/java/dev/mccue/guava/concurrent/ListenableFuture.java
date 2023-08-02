@@ -21,8 +21,8 @@ import java.util.concurrent.RejectedExecutionException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A {@link Future} that accepts completion listeners. Each listener has an associated executor, and
- * it is invoked using this executor once the future's computation is {@linkplain Future#isDone()
+ * A {@code Future} that accepts completion listeners. Each listener has an associated executor, and
+ * it is invoked using this executor once the future's computation is {@code Future#isDone()
  * complete}. If the computation has already completed when the listener is added, the listener will
  * execute immediately.
  *
@@ -32,12 +32,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * <p>This class is GWT-compatible.
  *
- * <h2>Purpose</h2>
+ * <h3>Purpose</h3>
  *
  * <p>The main purpose of {@code ListenableFuture} is to help you chain together a graph of
- * asynchronous operations. You can chain them together manually with calls to methods like {@link
+ * asynchronous operations. You can chain them together manually with calls to methods like {@code
  * Futures#transform(ListenableFuture, dev.mccue.guava.base.Function, Executor) Futures.transform}
- * (or {@link FluentFuture#transform(dev.mccue.guava.base.Function, Executor)
+ * (or {@code FluentFuture#transform(dev.mccue.guava.base.Function, Executor)
  * FluentFuture.transform}), but you will often find it easier to use a framework. Frameworks
  * automate the process, often adding features like monitoring, debugging, and cancellation.
  * Examples of frameworks include:
@@ -46,9 +46,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *   <li><a href="https://dagger.dev/producers.html">Dagger Producers</a>
  * </ul>
  *
- * <p>The main purpose of {@link #addListener addListener} is to support this chaining. You will
+ * <p>The main purpose of {@code #addListener addListener} is to support this chaining. You will
  * rarely use it directly, in part because it does not provide direct access to the {@code Future}
- * result. (If you want such access, you may prefer {@link Futures#addCallback
+ * result. (If you want such access, you may prefer {@code Futures#addCallback
  * Futures.addCallback}.) Still, direct {@code addListener} calls are occasionally useful:
  *
  * <pre>{@code
@@ -60,7 +60,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *     processedCount.incrementAndGet();
  *     inFlight.remove(name);
  *     lastProcessed.set(name);
- *     logger.info("Done with {0}", name);
+ *     logger.log(java.lang.System.Logger.Level.INFO, "Done with {0}", name);
  *   }
  * }, executor);
  * }</pre>
@@ -68,29 +68,29 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <h3>How to get an instance</h3>
  *
  * <p>We encourage you to return {@code ListenableFuture} from your methods so that your users can
- * take advantage of the {@linkplain Futures utilities built atop the class}. The way that you will
+ * take advantage of the {@code Futures utilities built atop the class}. The way that you will
  * create {@code ListenableFuture} instances depends on how you currently create {@code Future}
  * instances:
  *
  * <ul>
  *   <li>If you receive them from an {@code java.util.concurrent.ExecutorService}, convert that
- *       service to a {@link ListeningExecutorService}, usually by calling {@link
+ *       service to a {@code ListeningExecutorService}, usually by calling {@code
  *       MoreExecutors#listeningDecorator(java.util.concurrent.ExecutorService)
  *       MoreExecutors.listeningDecorator}.
- *   <li>If you manually call {@link java.util.concurrent.FutureTask#set} or a similar method,
- *       create a {@link SettableFuture} instead. (If your needs are more complex, you may prefer
- *       {@link AbstractFuture}.)
+ *   <li>If you manually call {@code java.util.concurrent.FutureTask#set} or a similar method,
+ *       create a {@code SettableFuture} instead. (If your needs are more complex, you may prefer
+ *       {@code AbstractFuture}.)
  * </ul>
  *
- * <p><b>Test doubles</b>: If you need a {@code ListenableFuture} for your test, try a {@link
- * SettableFuture} or one of the methods in the {@link Futures#immediateFuture Futures.immediate*}
+ * <p><b>Test doubles</b>: If you need a {@code ListenableFuture} for your test, try a {@code
+ * SettableFuture} or one of the methods in the {@code Futures#immediateFuture Futures.immediate*}
  * family. <b>Avoid</b> creating a mock or stub {@code Future}. Mock and stub implementations are
  * fragile because they assume that only certain methods will be called and because they often
  * implement subtleties of the API improperly.
  *
  * <p><b>Custom implementation</b>: Avoid implementing {@code ListenableFuture} from scratch. If you
  * can't get by with the standard implementations, prefer to derive a new {@code Future} instance
- * with the methods in {@link Futures} or, if necessary, to extend {@link AbstractFuture}.
+ * with the methods in {@code Futures} or, if necessary, to extend {@code AbstractFuture}.
  *
  * <p>Occasionally, an API will return a plain {@code Future} and it will be impossible to change
  * the return type. For this case, we provide a more expensive workaround in {@code
@@ -120,8 +120,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @ElementTypesAreNonnullByDefault
 public interface ListenableFuture<V extends @Nullable Object> extends Future<V> {
   /**
-   * Registers a listener to be {@linkplain Executor#execute(Runnable) run} on the given executor.
-   * The listener will run when the {@code Future}'s computation is {@linkplain Future#isDone()
+   * Registers a listener to be {@code Executor#execute(Runnable) run} on the given executor.
+   * The listener will run when the {@code Future}'s computation is {@code Future#isDone()
    * complete} or, if the computation is already complete, immediately.
    *
    * <p>There is no guaranteed ordering of execution of listeners, but any listener added through
@@ -129,16 +129,16 @@ public interface ListenableFuture<V extends @Nullable Object> extends Future<V> 
    *
    * <p>Exceptions thrown by a listener will be propagated up to the executor. Any exception thrown
    * during {@code Executor.execute} (e.g., a {@code RejectedExecutionException} or an exception
-   * thrown by {@linkplain MoreExecutors#directExecutor direct execution}) will be caught and
+   * thrown by {@code MoreExecutors#directExecutor direct execution}) will be caught and
    * logged.
    *
    * <p>Note: If your listener is lightweight -- and will not cause stack overflow by completing
-   * more futures or adding more {@code directExecutor()} listeners inline -- consider {@link
+   * more futures or adding more {@code directExecutor()} listeners inline -- consider {@code
    * MoreExecutors#directExecutor}. Otherwise, avoid it: See the warnings on the docs for {@code
    * directExecutor}.
    *
    * <p>This is the most general listener interface. For common operations performed using
-   * listeners, see {@link Futures}. For a simplified but general listener interface, see {@link
+   * listeners, see {@code Futures}. For a simplified but general listener interface, see {@code
    * Futures#addCallback addCallback()}.
    *
    * <p>Memory consistency effects: Actions in a thread prior to adding a listener <a

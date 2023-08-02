@@ -22,11 +22,11 @@ import java.util.concurrent.RunnableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Abstract {@link ListeningExecutorService} implementation that creates {@link ListenableFuture}
- * instances for each {@link Runnable} and {@link Callable} submitted to it. These tasks are run
- * with the abstract {@link #execute execute(Runnable)} method.
+ * Abstract {@code ListeningExecutorService} implementation that creates {@code ListenableFuture}
+ * instances for each {@code Runnable} and {@code Callable} submitted to it. These tasks are run
+ * with the abstract {@code #execute execute(Runnable)} method.
  *
- * <p>In addition to {@link #execute}, subclasses must implement all methods related to shutdown and
+ * <p>In addition to {@code #execute}, subclasses must implement all methods related to shutdown and
  * termination.
  *
  * @author Chris Povirk
