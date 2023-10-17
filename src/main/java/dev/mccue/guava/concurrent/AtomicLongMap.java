@@ -17,6 +17,7 @@
 package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.concurrent.LazyInit;
@@ -143,8 +144,11 @@ public final class AtomicLongMap<K> implements Serializable {
   @CanIgnoreReturnValue
   public long updateAndGet(K key, LongUnaryOperator updaterFunction) {
     checkNotNull(updaterFunction);
-    return map.compute(
-        key, (k, value) -> updaterFunction.applyAsLong((value == null) ? 0L : value.longValue()));
+    Long result =
+        map.compute(
+            key,
+            (k, value) -> updaterFunction.applyAsLong((value == null) ? 0L : value.longValue()));
+    return requireNonNull(result);
   }
 
   /**
@@ -325,7 +329,7 @@ public final class AtomicLongMap<K> implements Serializable {
                 return oldValue;
               }
             });
-    return noValue.get() ? 0L : result.longValue();
+    return noValue.get() ? 0L : requireNonNull(result).longValue();
   }
 
   /**

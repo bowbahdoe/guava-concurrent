@@ -20,6 +20,7 @@ import static dev.mccue.guava.concurrent.Platform.restoreInterruptIfIsInterrupte
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.AbstractOwnableSynchronizer;
 import java.util.concurrent.locks.LockSupport;
+import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 
@@ -229,6 +230,7 @@ abstract class InterruptibleTask<T extends @Nullable Object>
       super.setExclusiveOwnerThread(thread);
     }
 
+    @CheckForNull
     Thread getOwner() {
       return super.getExclusiveOwnerThread();
     }

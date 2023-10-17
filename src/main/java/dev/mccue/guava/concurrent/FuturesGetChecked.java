@@ -18,7 +18,6 @@ import static dev.mccue.guava.base.Preconditions.checkArgument;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 
-import dev.mccue.guava.base.Function;
 import dev.mccue.guava.collect.Ordering;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import java.lang.ref.WeakReference;
@@ -223,7 +222,7 @@ final class FuturesGetChecked {
     // getConstructors() guarantees this as long as we don't modify the array.
     @SuppressWarnings({"unchecked", "rawtypes"})
     List<Constructor<X>> constructors = (List) Arrays.asList(exceptionClass.getConstructors());
-    for (Constructor<X> constructor : preferringStrings(constructors)) {
+    for (Constructor<X> constructor : preferringStringsThenThrowables(constructors)) {
       X instance = newFromConstructor(constructor, cause);
       if (instance != null) {
         if (instance.getCause() == null) {
@@ -239,17 +238,22 @@ final class FuturesGetChecked {
         cause);
   }
 
-  private static <X extends Exception> List<Constructor<X>> preferringStrings(
+  private static <X extends Exception> List<Constructor<X>> preferringStringsThenThrowables(
       List<Constructor<X>> constructors) {
-    return WITH_STRING_PARAM_FIRST.sortedCopy(constructors);
+    return WITH_STRING_PARAM_THEN_WITH_THROWABLE_PARAM.sortedCopy(constructors);
   }
 
-  private static final Ordering<Constructor<?>> WITH_STRING_PARAM_FIRST =
+  // TODO: b/296487962 - Consider defining a total order over constructors.
+  private static final Ordering<List<Class<?>>> ORDERING_BY_CONSTRUCTOR_PARAMETER_LIST =
       Ordering.natural()
-          .onResultOf(
-              (Function<Constructor<?>, Boolean>)
-                  input -> asList(input.getParameterTypes()).contains(String.class))
+          .onResultOf((List<Class<?>> params) -> params.contains(String.class))
+          .compound(
+              Ordering.natural()
+                  .onResultOf((List<Class<?>> params) -> params.contains(Throwable.class)))
           .reverse();
+  private static final Ordering<Constructor<?>> WITH_STRING_PARAM_THEN_WITH_THROWABLE_PARAM =
+      ORDERING_BY_CONSTRUCTOR_PARAMETER_LIST.onResultOf(
+          constructor -> asList(constructor.getParameterTypes()));
 
   @CheckForNull
   private static <X> X newFromConstructor(Constructor<X> constructor, Throwable cause) {
