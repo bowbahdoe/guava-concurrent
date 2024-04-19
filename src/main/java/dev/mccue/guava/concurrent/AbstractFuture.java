@@ -176,8 +176,11 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     // Log after all static init is finished; if an installed logger uses any Futures methods, it
     // shouldn't break in cases where reflection is missing/broken.
     if (thrownAtomicReferenceFieldUpdaterFailure != null) {
-      log.log(
-          Level.ERROR, "SafeAtomicHelper is broken!", thrownAtomicReferenceFieldUpdaterFailure);
+      log.get()
+          .log(
+              Level.ERROR,
+              "SafeAtomicHelper is broken!",
+              thrownAtomicReferenceFieldUpdaterFailure);
     }
   }
   /** Waiter links form a Treiber stack, in the {@code #waiters} field. */
