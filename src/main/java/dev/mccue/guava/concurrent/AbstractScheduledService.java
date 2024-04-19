@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.lang.System.Logger.Level;
-import java.lang.System.Logger;
 import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -100,7 +99,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 @ElementTypesAreNonnullByDefault
 public abstract class AbstractScheduledService implements Service {
-  private static final Logger logger = System.getLogger(AbstractScheduledService.class.getName());
+  private static final LazyLogger logger = new LazyLogger(AbstractScheduledService.class);
 
   /**
    * A scheduler defines the policy for how the {@code AbstractScheduledService} should run its
@@ -232,10 +231,12 @@ public abstract class AbstractScheduledService implements Service {
             shutDown();
           } catch (Exception ignored) {
             restoreInterruptIfIsInterruptedException(ignored);
-            logger.log(
-                Level.WARNING,
-                "Error while attempting to shut down the service after failure.",
-                ignored);
+            logger
+                .get()
+                .log(
+                    Level.WARNING,
+                    "Error while attempting to shut down the service after failure.",
+                    ignored);
           }
           notifyFailed(t);
           // requireNonNull is safe now, just as it was above.
@@ -598,7 +599,9 @@ public abstract class AbstractScheduledService implements Service {
         lock.lock();
         try {
           toReturn = initializeOrUpdateCancellationDelegate(schedule);
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
+          // Any Exception is either a RuntimeException or sneaky checked exception.
+          //
           // If an exception is thrown by the subclass then we need to make sure that the service
           // notices and transitions to the FAILED state. We do it by calling notifyFailed directly
           // because the service does not monitor the state of the future so if the exception is not

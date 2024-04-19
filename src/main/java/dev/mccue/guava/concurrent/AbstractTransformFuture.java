@@ -21,6 +21,7 @@ import static dev.mccue.guava.concurrent.Platform.restoreInterruptIfIsInterrupte
 
 import dev.mccue.guava.base.Function;
 import com.google.errorprone.annotations.ForOverride;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -55,8 +56,8 @@ abstract class AbstractTransformFuture<
    * In certain circumstances, this field might theoretically not be visible to an afterDone() call
    * triggered by cancel(). For details, see the comments on the fields of TimeoutFuture.
    */
-  @CheckForNull ListenableFuture<? extends I> inputFuture;
-  @CheckForNull F function;
+  @CheckForNull @LazyInit ListenableFuture<? extends I> inputFuture;
+  @CheckForNull @LazyInit F function;
 
   AbstractTransformFuture(ListenableFuture<? extends I> inputFuture, F function) {
     this.inputFuture = checkNotNull(inputFuture);
@@ -64,6 +65,7 @@ abstract class AbstractTransformFuture<
   }
 
   @Override
+  @SuppressWarnings("CatchingUnchecked") // sneaky checked exception
   public final void run() {
     ListenableFuture<? extends I> localInputFuture = inputFuture;
     F localFunction = function;
@@ -102,7 +104,7 @@ abstract class AbstractTransformFuture<
       // Set the cause of the exception as this future's exception.
       setException(e.getCause());
       return;
-    } catch (RuntimeException e) {
+    } catch (Exception e) { // sneaky checked exception
       // Bug in inputFuture.get(). Propagate to the output Future so that its consumers don't hang.
       setException(e);
       return;

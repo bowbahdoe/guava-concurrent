@@ -714,7 +714,8 @@ public final class MoreExecutors {
       public void run() {
         try {
           delegate.run();
-        } catch (RuntimeException | Error t) {
+        } catch (Throwable t) {
+          // Any Exception is either a RuntimeException or sneaky checked exception.
           setException(t);
           throw t;
         }
@@ -757,7 +758,10 @@ public final class MoreExecutors {
    * An implementation of {@code ExecutorService#invokeAny} for {@code ListeningExecutorService}
    * implementations.
    */
-  @SuppressWarnings("GoodTime") // should accept a java.time.Duration
+  @SuppressWarnings({
+    "GoodTime", // should accept a java.time.Duration
+    "CatchingUnchecked", // sneaky checked exception
+  })
   @ParametricNullness
   static <T extends @Nullable Object> T invokeAnyImpl(
       ListeningExecutorService executorService,
@@ -818,7 +822,9 @@ public final class MoreExecutors {
             return f.get();
           } catch (ExecutionException eex) {
             ee = eex;
-          } catch (RuntimeException rex) {
+          } catch (InterruptedException iex) {
+            throw iex;
+          } catch (Exception rex) { // sneaky checked exception
             ee = new ExecutionException(rex);
           }
         }

@@ -55,7 +55,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.lang.System.Logger;
 import dev.mccue.jsr305.CheckForNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -192,7 +191,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 // TODO(dpb): GWT compatibility.
 public final class ClosingFuture<V extends @Nullable Object> {
 
-  private static final Logger logger = System.getLogger(ClosingFuture.class.getName());
+  private static final LazyLogger logger = new LazyLogger(ClosingFuture.class);
 
   /**
    * An object that can capture objects to be closed later, when a {@code ClosingFuture} pipeline is
@@ -677,7 +676,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    *
    * <p>After calling this method, you may not call {@code #finishToFuture()}, {@code
    * #finishToValueAndCloser(ValueAndCloserConsumer, Executor)}, or any other derivation method on
-   * this {@code ClosingFuture}.
+   * the original {@code ClosingFuture} instance.
    *
    * @param function transforms the value of this step to the value of the derived step
    * @param executor executor to run the function in
@@ -770,7 +769,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    *
    * <p>After calling this method, you may not call {@code #finishToFuture()}, {@code
    * #finishToValueAndCloser(ValueAndCloserConsumer, Executor)}, or any other derivation method on
-   * this {@code ClosingFuture}.
+   * the original {@code ClosingFuture} instance.
    *
    * @param function transforms the value of this step to a {@code ClosingFuture} with the value of
    *     the derived step
@@ -861,7 +860,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    *
    * <p>After calling this method, you may not call {@code #finishToFuture()}, {@code
    * #finishToValueAndCloser(ValueAndCloserConsumer, Executor)}, or any other derivation method on
-   * this {@code ClosingFuture}.
+   * the original {@code ClosingFuture} instance.
    *
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against this step's exception. "This step's exception" means the cause of
@@ -954,7 +953,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    *
    * <p>After calling this method, you may not call {@code #finishToFuture()}, {@code
    * #finishToValueAndCloser(ValueAndCloserConsumer, Executor)}, or any other derivation method on
-   * this {@code ClosingFuture}.
+   * the original {@code ClosingFuture} instance.
    *
    * @param exceptionType the exception type that triggers use of {@code fallback}. The exception
    *     type is matched against this step's exception. "This step's exception" means the cause of
@@ -1011,13 +1010,13 @@ public final class ClosingFuture<V extends @Nullable Object> {
    *
    * <p>After calling this method, you may not call {@code
    * #finishToValueAndCloser(ValueAndCloserConsumer, Executor)}, this method, or any other
-   * derivation method on this {@code ClosingFuture}.
+   * derivation method on the original {@code ClosingFuture} instance.
    *
    * @return a {@code Future} that represents the final value or exception of the pipeline
    */
   public FluentFuture<V> finishToFuture() {
     if (compareAndUpdateState(OPEN, WILL_CLOSE)) {
-      logger.log(TRACE, "will close {0}", this);
+      logger.get().log(TRACE, "will close {0}", this);
       future.addListener(
           new Runnable() {
             @Override
@@ -1056,7 +1055,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    * receiver can store the {@code ValueAndCloser} outside the receiver for later synchronous use.
    *
    * <p>After calling this method, you may not call {@code #finishToFuture()}, this method again, or
-   * any other derivation method on this {@code ClosingFuture}.
+   * any other derivation method on the original {@code ClosingFuture} instance.
    *
    * @param consumer a callback whose method will be called (using {@code executor}) when this
    *     operation is done
@@ -1117,7 +1116,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   @CanIgnoreReturnValue
   public boolean cancel(boolean mayInterruptIfRunning) {
-    logger.log(TRACE, "cancelling {0}", this);
+    logger.get().log(TRACE, "cancelling {0}", this);
     boolean cancelled = future.cancel(mayInterruptIfRunning);
     if (cancelled) {
       close();
@@ -1126,7 +1125,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
   }
 
   private void close() {
-    logger.log(TRACE, "closing {0}", this);
+    logger.get().log(TRACE, "closing {0}", this);
     closeables.close();
   }
 
@@ -2149,14 +2148,26 @@ public final class ClosingFuture<V extends @Nullable Object> {
             try {
               closeable.close();
             } catch (Exception e) {
+              /*
+               * In guava-jre, any kind of Exception may be thrown because `closeable` has type
+               * `AutoCloseable`.
+               *
+               * In guava-android, the only kinds of Exception that may be thrown are
+               * RuntimeException and IOException because `closeable` has type `Closeable`—except
+               * that we have to account for sneaky checked exception.
+               */
               restoreInterruptIfIsInterruptedException(e);
-              logger.log(WARNING, "thrown by close()", e);
+              logger.get().log(WARNING, "thrown by close()", e);
             }
           });
     } catch (RejectedExecutionException e) {
-      if (logger.isLoggable(WARNING)) {
-        logger.log(
-            WARNING, String.format("while submitting close to %s; will close inline", executor), e);
+      if (logger.get().isLoggable(WARNING)) {
+        logger
+            .get()
+            .log(
+                WARNING,
+                String.format("while submitting close to %s; will close inline", executor),
+                e);
       }
       closeQuietly(closeable, directExecutor());
     }

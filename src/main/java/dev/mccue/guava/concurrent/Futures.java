@@ -31,6 +31,7 @@ import dev.mccue.guava.concurrent.ImmediateFuture.ImmediateFailedFuture;
 import dev.mccue.guava.concurrent.internal.InternalFutureFailureAccess;
 import dev.mccue.guava.concurrent.internal.InternalFutures;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -168,6 +169,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    *
    * @since 14.0
    */
+  @SuppressWarnings("unchecked") // ImmediateCancelledFuture can work with any type
   public static <V extends @Nullable Object> ListenableFuture<V> immediateCancelledFuture() {
     ListenableFuture<Object> instance = ImmediateCancelledFuture.INSTANCE;
     if (instance != null) {
@@ -535,7 +537,8 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
       private O applyTransformation(I input) throws ExecutionException {
         try {
           return function.apply(input);
-        } catch (RuntimeException | Error t) {
+        } catch (Throwable t) {
+          // Any Exception is either a RuntimeException or sneaky checked exception.
           throw new ExecutionException(t);
         }
       }
@@ -783,7 +786,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
   /** A wrapped future that does not propagate cancellation to its delegate. */
   private static final class NonCancellationPropagatingFuture<V extends @Nullable Object>
       extends AbstractFuture.TrustedFuture<V> implements Runnable {
-    @CheckForNull private ListenableFuture<V> delegate;
+    @CheckForNull @LazyInit private ListenableFuture<V> delegate;
 
     NonCancellationPropagatingFuture(final ListenableFuture<V> delegate) {
       this.delegate = delegate;
@@ -1115,7 +1118,8 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
       } catch (ExecutionException e) {
         callback.onFailure(e.getCause());
         return;
-      } catch (RuntimeException | Error e) {
+      } catch (Throwable e) {
+        // Any Exception is either a RuntimeException or sneaky checked exception.
         callback.onFailure(e);
         return;
       }

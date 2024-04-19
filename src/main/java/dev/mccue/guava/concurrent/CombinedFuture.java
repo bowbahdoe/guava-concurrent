@@ -18,6 +18,7 @@ import static dev.mccue.guava.base.Preconditions.checkNotNull;
 import static dev.mccue.guava.concurrent.AggregateFuture.ReleaseResourcesReason.OUTPUT_FUTURE_DONE;
 
 import dev.mccue.guava.collect.ImmutableCollection;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -30,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @ElementTypesAreNonnullByDefault
 final class CombinedFuture<V extends @Nullable Object>
     extends AggregateFuture<@Nullable Object, V> {
-  @CheckForNull private CombinedFutureInterruptibleTask<?> task;
+  @CheckForNull @LazyInit private CombinedFutureInterruptibleTask<?> task;
 
   CombinedFuture(
       ImmutableCollection<? extends ListenableFuture<?>> futures,

@@ -25,6 +25,7 @@ import dev.mccue.guava.base.Function;
 import dev.mccue.guava.concurrent.internal.InternalFutureFailureAccess;
 import dev.mccue.guava.concurrent.internal.InternalFutures;
 import com.google.errorprone.annotations.ForOverride;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import dev.mccue.jsr305.CheckForNull;
@@ -60,9 +61,9 @@ abstract class AbstractCatchingFuture<
    * In certain circumstances, this field might theoretically not be visible to an afterDone() call
    * triggered by cancel(). For details, see the comments on the fields of TimeoutFuture.
    */
-  @CheckForNull ListenableFuture<? extends V> inputFuture;
-  @CheckForNull Class<X> exceptionType;
-  @CheckForNull F fallback;
+  @CheckForNull @LazyInit ListenableFuture<? extends V> inputFuture;
+  @CheckForNull @LazyInit Class<X> exceptionType;
+  @CheckForNull @LazyInit F fallback;
 
   AbstractCatchingFuture(
       ListenableFuture<? extends V> inputFuture, Class<X> exceptionType, F fallback) {
@@ -106,8 +107,8 @@ abstract class AbstractCatchingFuture<
                     + e.getClass()
                     + " without a cause");
       }
-    } catch (RuntimeException | Error e) { // this includes cancellation exception
-      throwable = e;
+    } catch (Throwable t) { // this includes CancellationException and sneaky checked exception
+      throwable = t;
     }
 
     if (throwable == null) {

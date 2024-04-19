@@ -23,12 +23,12 @@ import static java.lang.System.identityHashCode;
 
 import dev.mccue.guava.base.Preconditions;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.lang.System.Logger.Level;
-import java.lang.System.Logger;
 import dev.mccue.jsr305.CheckForNull;
 
 /**
@@ -47,7 +47,7 @@ import dev.mccue.jsr305.CheckForNull;
  */
 @ElementTypesAreNonnullByDefault
 final class SequentialExecutor implements Executor {
-  private static final Logger log = System.getLogger(SequentialExecutor.class.getName());
+  private static final LazyLogger log = new LazyLogger(SequentialExecutor.class);
 
   enum WorkerRunningState {
     /** Runnable is not running and not queued for execution */
@@ -66,6 +66,7 @@ final class SequentialExecutor implements Executor {
   private final Deque<Runnable> queue = new ArrayDeque<>();
 
   /** see {@code WorkerRunningState} */
+  @LazyInit
   @GuardedBy("queue")
   private WorkerRunningState workerRunningState = IDLE;
 
@@ -131,7 +132,8 @@ final class SequentialExecutor implements Executor {
 
     try {
       executor.execute(worker);
-    } catch (RuntimeException | Error t) {
+    } catch (Throwable t) {
+      // Any Exception is either a RuntimeException or sneaky checked exception.
       synchronized (queue) {
         boolean removed =
             (workerRunningState == IDLE || workerRunningState == QUEUING)
@@ -197,6 +199,7 @@ final class SequentialExecutor implements Executor {
      * will still be present. If the composed Executor is an ExecutorService, it can respond to
      * shutdown() by returning tasks queued on that Thread after {@code #worker} drains the queue.
      */
+    @SuppressWarnings("CatchingUnchecked") // sneaky checked exception
     private void workOnQueue() {
       boolean interruptedDuringTask = false;
       boolean hasSetRunning = false;
@@ -230,8 +233,8 @@ final class SequentialExecutor implements Executor {
           interruptedDuringTask |= Thread.interrupted();
           try {
             task.run();
-          } catch (RuntimeException e) {
-            log.log(Level.ERROR, "Exception while executing runnable " + task, e);
+          } catch (Exception e) { // sneaky checked exception
+            log.get().log(Level.ERROR, "Exception while executing runnable " + task, e);
           } finally {
             task = null;
           }

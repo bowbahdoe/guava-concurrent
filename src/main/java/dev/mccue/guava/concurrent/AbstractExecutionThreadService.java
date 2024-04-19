@@ -22,7 +22,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.lang.System.Logger.Level;
-import java.lang.System.Logger;
 
 /**
  * Base class for services that can implement {@code #startUp}, {@code #run} and {@code #shutDown}
@@ -34,8 +33,7 @@ import java.lang.System.Logger;
  */
 @ElementTypesAreNonnullByDefault
 public abstract class AbstractExecutionThreadService implements Service {
-  private static final Logger logger =
-      System.getLogger(AbstractExecutionThreadService.class.getName());
+  private static final LazyLogger logger = new LazyLogger(AbstractExecutionThreadService.class);
 
   /* use AbstractService for state management */
   private final Service delegate =
@@ -62,10 +60,12 @@ public abstract class AbstractExecutionThreadService implements Service {
                         // TODO(lukes): if guava ever moves to java7, this would be a good
                         // candidate for a suppressed exception, or maybe we could generalize
                         // Closer.Suppressor
-                        logger.log(
-                            Level.WARNING,
-                            "Error while attempting to shut down the service after failure.",
-                            ignored);
+                        logger
+                            .get()
+                            .log(
+                                Level.WARNING,
+                                "Error while attempting to shut down the service after failure.",
+                                ignored);
                       }
                       notifyFailed(t);
                       return;
