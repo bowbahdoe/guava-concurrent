@@ -33,7 +33,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Implementations of {@code Futures.catching*}. */
 @ElementTypesAreNonnullByDefault
-@SuppressWarnings("nullness") // TODO(b/147136275): Remove once our checker understands & and |.
+@SuppressWarnings({
+  // Whenever both tests are cheap and functional, it's faster to use &, | instead of &&, ||
+  "ShortCircuitBoolean",
+  "nullness", // TODO(b/147136275): Remove once our checker understands & and |.
+})
 abstract class AbstractCatchingFuture<
         V extends @Nullable Object, X extends Throwable, F, T extends @Nullable Object>
     extends FluentFuture.TrustedFuture<V> implements Runnable {
@@ -47,7 +51,7 @@ abstract class AbstractCatchingFuture<
     return future;
   }
 
-  static <X extends Throwable, V extends @Nullable Object> ListenableFuture<V> create(
+  static <X extends Throwable, V extends @Nullable Object> ListenableFuture<V> createAsync(
       ListenableFuture<? extends V> input,
       Class<X> exceptionType,
       AsyncFunction<? super X, ? extends V> fallback,
@@ -178,7 +182,8 @@ abstract class AbstractCatchingFuture<
 
   @Override
   protected final void afterDone() {
-    maybePropagateCancellationTo(inputFuture);
+    ListenableFuture<? extends V> localInputFuture = inputFuture;
+    maybePropagateCancellationTo(localInputFuture);
     this.inputFuture = null;
     this.exceptionType = null;
     this.fallback = null;

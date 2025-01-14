@@ -15,6 +15,7 @@
 package dev.mccue.guava.concurrent;
 
 import static dev.mccue.guava.concurrent.MoreExecutors.directExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import dev.mccue.guava.base.Preconditions;
 import com.google.errorprone.annotations.concurrent.LazyInit;
@@ -88,6 +89,8 @@ final class TimeoutFuture<V extends @Nullable Object> extends FluentFuture.Trust
     }
 
     @Override
+    // TODO: b/227335009 - Maybe change interruption behavior, but it requires thought.
+    @SuppressWarnings("Interruption")
     public void run() {
       // If either of these reads return null then we must be after a successful cancel or another
       // call to this method.
@@ -124,7 +127,7 @@ final class TimeoutFuture<V extends @Nullable Object> extends FluentFuture.Trust
           // to produce the message throws (probably StackOverflowError from delegate.toString())
           try {
             if (timer != null) {
-              long overDelayMs = Math.abs(timer.getDelay(TimeUnit.MILLISECONDS));
+              long overDelayMs = Math.abs(timer.getDelay(MILLISECONDS));
               if (overDelayMs > 10) { // Not all timing drift is worth reporting
                 message += " (timeout delayed by " + overDelayMs + " ms after scheduled time)";
               }
@@ -160,7 +163,7 @@ final class TimeoutFuture<V extends @Nullable Object> extends FluentFuture.Trust
     if (localInputFuture != null) {
       String message = "inputFuture=[" + localInputFuture + "]";
       if (localTimer != null) {
-        long delay = localTimer.getDelay(TimeUnit.MILLISECONDS);
+        long delay = localTimer.getDelay(MILLISECONDS);
         // Negative delays look confusing in an error message
         if (delay > 0) {
           message += ", remaining delay=[" + delay + " ms]";
@@ -173,7 +176,8 @@ final class TimeoutFuture<V extends @Nullable Object> extends FluentFuture.Trust
 
   @Override
   protected void afterDone() {
-    maybePropagateCancellationTo(delegateRef);
+    ListenableFuture<? extends V> delegate = delegateRef;
+    maybePropagateCancellationTo(delegate);
 
     Future<?> localTimer = timer;
     // Try to cancel the timer as an optimization.

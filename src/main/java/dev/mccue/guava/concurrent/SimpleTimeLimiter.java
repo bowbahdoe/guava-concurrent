@@ -45,6 +45,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @since 1.0
  */
 @ElementTypesAreNonnullByDefault
+// TODO: b/227335009 - Maybe change interruption behavior, but it requires thought.
+@SuppressWarnings("Interruption")
 public final class SimpleTimeLimiter implements TimeLimiter {
 
   private final ExecutorService executor;

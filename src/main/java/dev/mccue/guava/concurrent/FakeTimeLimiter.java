@@ -35,6 +35,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 @ElementTypesAreNonnullByDefault
 public final class FakeTimeLimiter implements TimeLimiter {
+  /** Creates a new {@code FakeTimeLimiter}. */
+  public FakeTimeLimiter() {}
+
   @CanIgnoreReturnValue // TODO(kak): consider removing this
   @Override
   public <T> T newProxy(

@@ -73,7 +73,7 @@ public final class Uninterruptibles {
    * Invokes {@code latch.}{@code CountDownLatch#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean awaitUninterruptibly(CountDownLatch latch, Duration timeout) {
@@ -112,7 +112,7 @@ public final class Uninterruptibles {
    * Invokes {@code condition.}{@code Condition#await(long, TimeUnit) await(timeout, unit)}
    * uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean awaitUninterruptibly(Condition condition, Duration timeout) {
@@ -172,7 +172,7 @@ public final class Uninterruptibles {
    * Invokes {@code unit.}{@code TimeUnit#timedJoin(Thread, long) timedJoin(toJoin, timeout)}
    * uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static void joinUninterruptibly(Thread toJoin, Duration timeout) {
@@ -262,7 +262,7 @@ public final class Uninterruptibles {
    * @throws ExecutionException if the computation threw an exception
    * @throws CancellationException if the computation was cancelled
    * @throws TimeoutException if the wait timed out
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   @CanIgnoreReturnValue
   // java.time.Duration
@@ -367,7 +367,7 @@ public final class Uninterruptibles {
   /**
    * Invokes {@code unit.}{@code TimeUnit#sleep(long) sleep(sleepFor)} uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static void sleepUninterruptibly(Duration sleepFor) {
@@ -404,7 +404,7 @@ public final class Uninterruptibles {
    * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(1,
    * timeout, unit)} uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean tryAcquireUninterruptibly(Semaphore semaphore, Duration timeout) {
@@ -428,7 +428,7 @@ public final class Uninterruptibles {
    * Invokes {@code semaphore.}{@code Semaphore#tryAcquire(int, long, TimeUnit) tryAcquire(permits,
    * timeout, unit)} uninterruptibly.
    *
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean tryAcquireUninterruptibly(
@@ -472,7 +472,7 @@ public final class Uninterruptibles {
    * Invokes {@code lock.}{@code Lock#tryLock(long, TimeUnit) tryLock(timeout, unit)}
    * uninterruptibly.
    *
-   * @since 30.0
+   * @since 30.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean tryLockUninterruptibly(Lock lock, Duration timeout) {
@@ -524,7 +524,7 @@ public final class Uninterruptibles {
    * Invokes {@code executor.}{@code ExecutorService#awaitTermination(long, TimeUnit)
    * awaitTermination(long, TimeUnit)} uninterruptibly.
    *
-   * @since 30.0
+   * @since 30.0 (but only since 33.4.0 in the Android flavor)
    */
   // concurrency
   public static boolean awaitTerminationUninterruptibly(

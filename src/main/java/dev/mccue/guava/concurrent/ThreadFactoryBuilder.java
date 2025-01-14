@@ -40,6 +40,10 @@ import dev.mccue.jsr305.CheckForNull;
  * <p>If no backing thread factory is provided, a default backing thread factory is used as if by
  * calling {@code setThreadFactory(}{@code Executors#defaultThreadFactory()}{@code )}.
  *
+ * <p><b>Java 21+ users:</b> consider using the {@code Thread.Builder} interface instead. E.g.,
+ * instead of {@code new ThreadFactoryBuilder().setPriority(priority).setDaemon(false).build()}, use
+ * {@code Thread.ofPlatform().priority(priority).daemon(false).factory()}.
+ *
  * @author Kurt Alfred Kluever
  * @since 4.0
  */

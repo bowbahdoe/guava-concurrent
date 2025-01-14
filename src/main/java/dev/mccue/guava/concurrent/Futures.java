@@ -222,7 +222,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * Schedules {@code callable} on the specified {@code executor}, returning a {@code Future}.
    *
    * @throws RejectedExecutionException if the task cannot be scheduled for execution
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // java.util.concurrent.ScheduledExecutorService
   // TODO(cpovirk): Return ListenableScheduledFuture?
@@ -361,7 +361,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
       Class<X> exceptionType,
       AsyncFunction<? super X, ? extends V> fallback,
       Executor executor) {
-    return AbstractCatchingFuture.create(input, exceptionType, fallback, executor);
+    return AbstractCatchingFuture.createAsync(input, exceptionType, fallback, executor);
   }
 
   /**
@@ -373,7 +373,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * @param delegate The future to delegate to.
    * @param time when to time out the future
    * @param scheduledExecutor The executor service to enforce the timeout.
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   // java.util.concurrent.ScheduledExecutorService
   public static <V extends @Nullable Object> ListenableFuture<V> withTimeout(
@@ -443,7 +443,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
           ListenableFuture<I> input,
           AsyncFunction<? super I, ? extends O> function,
           Executor executor) {
-    return AbstractTransformFuture.create(input, function, executor);
+    return AbstractTransformFuture.createAsync(input, function, executor);
   }
 
   /**
@@ -1032,6 +1032,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
       delegateIndex = delegates.size();
     }
 
+    @SuppressWarnings("Interruption") // We are propagating an interrupt from a caller.
     private void recordCompletion() {
       if (incompleteOutputCount.decrementAndGet() == 0 && wasCancelled) {
         for (ListenableFuture<? extends T> toCancel : inputFutures) {
@@ -1260,7 +1261,7 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
    * @throws CancellationException if {@code get} throws a {@code CancellationException}
    * @throws IllegalArgumentException if {@code exceptionClass} extends {@code RuntimeException} or
    *     does not have a suitable constructor
-   * @since 28.0
+   * @since 28.0 (but only since 33.4.0 in the Android flavor)
    */
   @CanIgnoreReturnValue
   // reflection
@@ -1362,22 +1363,17 @@ public final class Futures extends GwtFuturesCatchingSpecialization {
     checkNotNull(future);
     try {
       return getUninterruptibly(future);
-    } catch (ExecutionException e) {
-      wrapAndThrowUnchecked(e.getCause());
-      throw new AssertionError();
+    } catch (ExecutionException wrapper) {
+      if (wrapper.getCause() instanceof Error) {
+        throw new ExecutionError((Error) wrapper.getCause());
+      }
+      /*
+       * It's an Exception. (Or it's a non-Error, non-Exception Throwable. From my survey of such
+       * classes, I believe that most users intended to extend Exception, so we'll treat it like an
+       * Exception.)
+       */
+      throw new UncheckedExecutionException(wrapper.getCause());
     }
-  }
-
-  private static void wrapAndThrowUnchecked(Throwable cause) {
-    if (cause instanceof Error) {
-      throw new ExecutionError((Error) cause);
-    }
-    /*
-     * It's an Exception. (Or it's a non-Error, non-Exception Throwable. From my survey of such
-     * classes, I believe that most users intended to extend Exception, so we'll treat it like an
-     * Exception.)
-     */
-    throw new UncheckedExecutionException(cause);
   }
 
   /*

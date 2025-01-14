@@ -19,6 +19,8 @@ import static dev.mccue.guava.concurrent.NullnessCasts.uncheckedNull;
 import static java.lang.Integer.toHexString;
 import static java.lang.System.identityHashCode;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater.newUpdater;
 
 import dev.mccue.guava.base.Strings;
@@ -26,6 +28,7 @@ import dev.mccue.guava.concurrent.internal.InternalFutureFailureAccess;
 import dev.mccue.guava.concurrent.internal.InternalFutures;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.ForOverride;
+import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -41,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.concurrent.locks.LockSupport;
 import java.lang.System.Logger.Level;
 import dev.mccue.jsr305.CheckForNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;;
 
 /**
  * An abstract implementation of {@code ListenableFuture}, intended for advanced users only. More
@@ -63,7 +66,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @since 1.0
  */
 @SuppressWarnings({
-  "ShortCircuitBoolean", // we use non-short circuiting comparisons intentionally
+  // Whenever both tests are cheap and functional, it's faster to use &, | instead of &&, ||
+  "ShortCircuitBoolean",
   "nullness", // TODO(b/147136275): Remove once our checker understands & and |.
 })
 
@@ -71,8 +75,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @ElementTypesAreNonnullByDefault
 public abstract class AbstractFuture<V extends @Nullable Object> extends InternalFutureFailureAccess
     implements ListenableFuture<V> {
-  // NOTE: Whenever both tests are cheap and functional, it's faster to use &, | instead of &&, ||
-
   static final boolean GENERATE_CANCELLATION_CAUSES;
 
   static {
@@ -146,13 +148,13 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   private static final AtomicHelper ATOMIC_HELPER;
 
-  static {
+   static {
     AtomicHelper helper;
     Throwable thrownAtomicReferenceFieldUpdaterFailure = null;
 
     try {
       helper =
-              new SafeAtomicHelper(
+              new AtomicReferenceFieldUpdaterAtomicHelper(
                       newUpdater(Waiter.class, Thread.class, "thread"),
                       newUpdater(Waiter.class, Waiter.class, "next"),
                       newUpdater(AbstractFuture.class, Waiter.class, "waiters"),
@@ -183,6 +185,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
               thrownAtomicReferenceFieldUpdaterFailure);
     }
   }
+
   /** Waiter links form a Treiber stack, in the {@code #waiters} field. */
   private static final class Waiter {
     static final Waiter TOMBSTONE = new Waiter(false /* ignored param */);
@@ -414,6 +417,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    *
    * @throws CancellationException {@inheritDoc}
    */
+  @SuppressWarnings("LabelledBreakTarget") // TODO(b/345814817): Maybe fix?
   @CanIgnoreReturnValue
   @Override
   @ParametricNullness
@@ -493,7 +497,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       // We over-waited for our timeout.
       message += " (plus ";
       long overWaitNanos = -remainingNanos;
-      long overWaitUnits = unit.convert(overWaitNanos, TimeUnit.NANOSECONDS);
+      long overWaitUnits = unit.convert(overWaitNanos, NANOSECONDS);
       long overWaitLeftoverNanos = overWaitNanos - unit.toNanos(overWaitUnits);
       boolean shouldShowExtraNanos =
           overWaitUnits == 0 || overWaitLeftoverNanos > SPIN_THRESHOLD_NANOS;
@@ -575,9 +579,13 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     // While this seems like it might be too branch-y, simple benchmarking proves it to be
     // unmeasurable (comparing done AbstractFutures with immediateFuture)
     if (obj instanceof Cancellation) {
-      throw cancellationExceptionWithCause("Task was cancelled.", ((Cancellation) obj).cause);
+      Cancellation cancellation = (Cancellation) obj;
+      Throwable cause = cancellation.cause;
+      throw cancellationExceptionWithCause("Task was cancelled.", cause);
     } else if (obj instanceof Failure) {
-      throw new ExecutionException(((Failure) obj).exception);
+      Failure failure = (Failure) obj;
+      Throwable exception = failure.exception;
+      throw new ExecutionException(exception);
     } else if (obj == NULL) {
       /*
        * It's safe to return null because we would only have stored it in the first place if it were
@@ -593,13 +601,13 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
 
   @Override
   public boolean isDone() {
-    final Object localValue = value;
+    Object localValue = value;
     return localValue != null & !(localValue instanceof SetFuture);
   }
 
   @Override
   public boolean isCancelled() {
-    final Object localValue = value;
+    Object localValue = value;
     return localValue instanceof Cancellation;
   }
 
@@ -708,7 +716,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    * @since 14.0
    */
   protected final boolean wasInterrupted() {
-    final Object localValue = value;
+    Object localValue = value;
     return (localValue instanceof Cancellation) && ((Cancellation) localValue).wasInterrupted;
   }
 
@@ -828,6 +836,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
    * @since 19.0
    */
   @CanIgnoreReturnValue
+  @SuppressWarnings("Interruption") // We are propagating an interrupt from a caller.
   protected boolean setFuture(ListenableFuture<? extends V> future) {
     checkNotNull(future);
     Object localValue = value;
@@ -1093,9 +1102,9 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   @CheckForNull
   protected final Throwable tryInternalFastPathGetFailure() {
     if (this instanceof Trusted) {
-      Object obj = value;
-      if (obj instanceof Failure) {
-        return ((Failure) obj).exception;
+      Object localValue = value;
+      if (localValue instanceof Failure) {
+        return ((Failure) localValue).exception;
       }
     }
     return null;
@@ -1173,9 +1182,7 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
   protected String pendingToString() {
     // TODO(diamondm) consider moving this into addPendingString so it's always in the output
     if (this instanceof ScheduledFuture) {
-      return "remaining delay=["
-          + ((ScheduledFuture) this).getDelay(TimeUnit.MILLISECONDS)
-          + " ms]";
+      return "remaining delay=[" + ((ScheduledFuture) this).getDelay(MILLISECONDS) + " ms]";
     }
     return null;
   }
@@ -1303,41 +1310,40 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
     /** Non-volatile write of the waiter to the {@code Waiter#next} field. */
     abstract void putNext(Waiter waiter, @CheckForNull Waiter newValue);
 
-    /** Performs a CAS operation on the {@code #waiters} field. */
+    /** Performs a CAS operation on the {@code AbstractFuture#waiters} field. */
     abstract boolean casWaiters(
         AbstractFuture<?> future, @CheckForNull Waiter expect, @CheckForNull Waiter update);
 
-    /** Performs a CAS operation on the {@code #listeners} field. */
+    /** Performs a CAS operation on the {@code AbstractFuture#listeners} field. */
     abstract boolean casListeners(
         AbstractFuture<?> future, @CheckForNull Listener expect, Listener update);
 
-    /** Performs a GAS operation on the {@code #waiters} field. */
+    /** Performs a GAS operation on the {@code AbstractFuture#waiters} field. */
     abstract Waiter gasWaiters(AbstractFuture<?> future, Waiter update);
 
-    /** Performs a GAS operation on the {@code #listeners} field. */
+    /** Performs a GAS operation on the {@code AbstractFuture#listeners} field. */
     abstract Listener gasListeners(AbstractFuture<?> future, Listener update);
 
-    /** Performs a CAS operation on the {@code #value} field. */
+    /** Performs a CAS operation on the {@code AbstractFuture#value} field. */
     abstract boolean casValue(AbstractFuture<?> future, @CheckForNull Object expect, Object update);
   }
 
 
 
   /** {@code AtomicHelper} based on {@code AtomicReferenceFieldUpdater}. */
-  @SuppressWarnings("rawtypes")
-  private static final class SafeAtomicHelper extends AtomicHelper {
+  private static final class AtomicReferenceFieldUpdaterAtomicHelper extends AtomicHelper {
     final AtomicReferenceFieldUpdater<Waiter, Thread> waiterThreadUpdater;
     final AtomicReferenceFieldUpdater<Waiter, Waiter> waiterNextUpdater;
-    final AtomicReferenceFieldUpdater<AbstractFuture, Waiter> waitersUpdater;
-    final AtomicReferenceFieldUpdater<AbstractFuture, Listener> listenersUpdater;
-    final AtomicReferenceFieldUpdater<AbstractFuture, Object> valueUpdater;
+    final AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Waiter> waitersUpdater;
+    final AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Listener> listenersUpdater;
+    final AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Object> valueUpdater;
 
-    SafeAtomicHelper(
+    AtomicReferenceFieldUpdaterAtomicHelper(
         AtomicReferenceFieldUpdater<Waiter, Thread> waiterThreadUpdater,
         AtomicReferenceFieldUpdater<Waiter, Waiter> waiterNextUpdater,
-        AtomicReferenceFieldUpdater<AbstractFuture, Waiter> waitersUpdater,
-        AtomicReferenceFieldUpdater<AbstractFuture, Listener> listenersUpdater,
-        AtomicReferenceFieldUpdater<AbstractFuture, Object> valueUpdater) {
+        AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Waiter> waitersUpdater,
+        AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Listener> listenersUpdater,
+        AtomicReferenceFieldUpdater<? super AbstractFuture<?>, Object> valueUpdater) {
       this.waiterThreadUpdater = waiterThreadUpdater;
       this.waiterNextUpdater = waiterNextUpdater;
       this.waitersUpdater = waitersUpdater;
@@ -1366,13 +1372,11 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       return listenersUpdater.compareAndSet(future, expect, update);
     }
 
-    /** Performs a GAS operation on the {@code #listeners} field. */
     @Override
     Listener gasListeners(AbstractFuture<?> future, Listener update) {
       return listenersUpdater.getAndSet(future, update);
     }
 
-    /** Performs a GAS operation on the {@code #waiters} field. */
     @Override
     Waiter gasWaiters(AbstractFuture<?> future, Waiter update) {
       return waitersUpdater.getAndSet(future, update);
@@ -1424,7 +1428,6 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       }
     }
 
-    /** Performs a GAS operation on the {@code #listeners} field. */
     @Override
     Listener gasListeners(AbstractFuture<?> future, Listener update) {
       synchronized (future) {
@@ -1436,7 +1439,6 @@ public abstract class AbstractFuture<V extends @Nullable Object> extends Interna
       }
     }
 
-    /** Performs a GAS operation on the {@code #waiters} field. */
     @Override
     Waiter gasWaiters(AbstractFuture<?> future, Waiter update) {
       synchronized (future) {

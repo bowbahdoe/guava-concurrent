@@ -238,6 +238,9 @@ public interface Service {
    * @since 15.0 (present as an interface in 13.0)
    */
   abstract class Listener {
+    /** Constructor for use by subclasses. */
+    public Listener() {}
+
     /**
      * Called when the service transitions from {@code State#NEW NEW} to {@code
      * State#STARTING STARTING}. This occurs when {@code Service#startAsync} is called the first
